@@ -1,0 +1,19 @@
+[workspace]
+authors = ["Ethan Littlestone <ethanlittlestone@gmail.com>"]
+channels = ["conda-forge", "bioconda", "defaults"]
+name = "USF_Lung_Cancer"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = "3.11"
+scanpy = "*"
+anndata = "*"
+pandas = "*"
+numpy = "*"
+matplotlib = "*"
+seaborn = "*"
+jupyterlab = "*"
+pixi = "*"
