@@ -2,6 +2,18 @@
 title: "Lung_Cancer_Project"
 ---
 
-## Quarto
+## Quarto USF Lung Cancer Workflow
+To start the analysis, we can utilize the containerization software Docker in order to ensure reproducibility on different machines as well as repeatability (rerunning same workflow on same data returns same results!). Docker can be downloaded via the web or by utilizing homebrew (Mac) or other OS package managers. *brew install docker-desktop --cask* 
+[Docker Desktop Download](https://www.docker.com/products/docker-desktop/)
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+
+[Single Cell Dataset](https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-6149)
+
+
+
+```{bash}
+
+```
+
+

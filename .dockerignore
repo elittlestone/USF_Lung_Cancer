@@ -1,0 +1,7 @@
+.conda
+__pycache__/
+*.pyc
+.Rproj.user/
+.Rhistory
+.DS_Store
+.ipynb_checkpoints/
