@@ -1,26 +1,28 @@
-# Use the official Miniconda3 base image
+# Use the official Miniconda base image
 FROM continuumio/miniconda3:latest
 
-# Set working directory inside container
+# Set the working directory inside the container
 WORKDIR /workspace
 
-# Install system dependencies (git needed to clone repos or for some packages)
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+# Install system dependencies (you can expand this list as needed)
+RUN apt-get update && apt-get install -y \
+    git \
+    zsh \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Pixi in the base environment
+# Install Pixi via conda
 RUN conda install -c conda-forge pixi -y
 
-# Copy the Pixi environment definition file into the container
-COPY pixi.toml /workspace/pixi.toml
 
-# Use Pixi to create the Conda environment from the .toml file
-RUN pixi env create -f pixi.toml
-
-# Switch the default shell to activate the created environment automatically
-SHELL ["conda", "run", "-n", "scenv", "/bin/bash", "-c"]
-
-# Copy the rest of your project files into the container
+# Copy your pixi.toml file into the container and Install environment based on the pixi.toml file
 COPY . /workspace
+RUN pixi install
 
-# Default command runs bash inside the activated conda environment
-CMD ["bash"]
+# Copy the user's local .zshrc into the container's home directory for zsh to pick it up
+# Ensure it's sourced. We'll append to .zshrc to ensure it's sourced after the pixi activation.
+RUN if [ -f /workspace/.zshrc ]; then \
+    cat /workspace/.zshrc >> /root/.zshrc; \
+    fi
+    
+# Default command drops you into a shell inside the pixi env
+CMD ["pixi", "run", "zsh"]

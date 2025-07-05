@@ -6,3 +6,4 @@
 # pixi environments
 .pixi
 *.egg-info
+.Rproj.user
