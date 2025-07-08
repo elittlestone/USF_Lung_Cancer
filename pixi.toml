@@ -17,5 +17,6 @@ jupyterlab = "*"
 pixi = "*"
 scipy = ">=1.16.0,<2"
 pyreadr = ">=0.5.3,<0.6"
+tqdm = ">=4.67.1,<5"
 
 [tasks]
