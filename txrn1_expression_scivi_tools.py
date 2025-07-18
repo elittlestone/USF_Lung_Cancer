@@ -3,12 +3,12 @@ import pandas as pd
 import pyreadr
 from scipy.io import mmread
 import anndata as ad
+import scvi
 import scanpy as sc
 import os 
 import matplotlib as mtplt
 mtplt.use('Agg')
 import matplotlib.pyplot as plt
-from scipy.stats import mannwhitneyu
 from tqdm import tqdm
 
 def main():
@@ -37,10 +37,20 @@ def main():
     args = parser.parse_args()
     matrix_file, genes, barcodes, annotation_file = args.expression_matrix_file, args.genes, args.barcodes, args.annotation_file
 
-    # Read in expression matrix and genes, barcodes
+    # Read in expression matrix and genes, barcodes (I/O)
     adata = read_exp_matrix(matrix_file, genes, barcodes)
-    adata = plots_and_mannwhitney(adata, annotation_file)
+
+    # Add annotations before modeling or plotting
+    annotations_dict = pyreadr.read_r(annotation_file)
+    annotations_df = annotations_dict[None].set_index("cell")
+    annotations_df = annotations_df.rename(columns={"truth": "cell_type"})
+    adata.obs = adata.obs.join(annotations_df, how="left")
+
+
+    adata, model = probabilistic_modeling(adata)
+    plots(adata)
     post_processing_and_clustering(adata)
+    run_de_analysis(adata, model)
 
 
 def read_exp_matrix(matrix_file, genes, barcodes):
@@ -57,96 +67,74 @@ def read_exp_matrix(matrix_file, genes, barcodes):
     adata.var_names = genes
     adata.obs_names = barcodes
 
-    # Normalize expression
-    sc.pp.normalize_total(adata)
-    sc.pp.log1p(adata)
-
-    # Scale 
-    sc.pp.scale(adata)
-
     return adata
 
-def plots_and_mannwhitney(adata, annotation_file):
 
-    # Load cell-type annotations
-    annotations_dict = pyreadr.read_r(annotation_file)
-    annotations_df = annotations_dict[None]
-    annotations_df = annotations_df.set_index("cell")
 
-    # Rename the annotation column to "cell_type"
-    annotations_df = annotations_df.rename(columns={"truth": "cell_type"})
+def probabilistic_modeling(adata):
+    scvi.settings.dl_num_workers = 1
+    scvi.model.SCVI.setup_anndata(adata, batch_key=None)
+    model = scvi.model.SCVI(adata)
+    model.train(accelerator = "mps")
 
-    # Get counts for each cell type
+    adata.obsm["X_scVI"] = model.get_latent_representation()
+    sc.pp.neighbors(adata, use_rep="X_scVI")
+    sc.tl.umap(adata)
+    return adata, model
 
-    celltype_counts = annotations_df["cell_type"].value_counts()
-    print(f"Cell type counts: {celltype_counts}")
 
-    # Merge the annotations table with the anndata object 
-    adata.obs = adata.obs.join(annotations_df, how="left")
 
-    # Plot to compare expression across cell-types (cancer cells vs immune cells)
+def plots(adata):
     genes_of_interest = ["TXNRD1", "TXN"]
+    adata_log = adata.copy()
 
-    # Initalize results list to then output to CSV 
-    results = []
-    reference_group = "Cancer cells"
+    # Log transform to make plots more interpretable 
+    sc.pp.log1p(adata_log)
 
-    #matches = [var for var in adata.var_names if "txn1" in var.lower()]
     for gene in tqdm(genes_of_interest):
-        # First create summary plots, then perform statistical analyses
-
-        # Violin plot
-        sc.pl.violin(adata, keys=gene, groupby="cell_type", show = False, stripplot = True)
+        sc.pl.violin(adata_log, keys=gene, groupby="cell_type", show=False, stripplot=True)
         plt.gcf().set_size_inches(12, 6)
-        plt.xticks(rotation = 45, ha = 'right')  # rotate labels for better readability
+        plt.xticks(rotation=45, ha='right')
         plt.savefig(f"results/figures/violin_{gene}_cancer_vs_immune_cells.png", bbox_inches='tight', dpi=300)
         plt.close("all")
 
-        # Dotplot
-        sc.pl.dotplot(adata, gene, groupby="cell_type", show = False)
+        sc.pl.dotplot(adata_log, gene, groupby="cell_type", show=False)
         plt.savefig(f"results/figures/dotplot_{gene}_cancer_vs_immune_cells.png", bbox_inches='tight', dpi=300)
         plt.close("all")
 
-        # Statistical tests 
-        cancer_expr = adata[adata.obs["cell_type"] == "Cancer cells", gene].X
-        cancer_expr = cancer_expr.toarray().flatten()
-        cancer_mean = cancer_expr.mean()
+def run_de_analysis(adata, model):
+    results = []
+    reference_group = "Cancer cells"
+    genes_of_interest = ["TXNRD1", "TXN"]
 
-        # Perform Mann-Whitney U for each cell type against cancer cells
+    for gene in tqdm(genes_of_interest):
         for cell_type in adata.obs["cell_type"].unique():
             if cell_type == reference_group:
-                expression = cancer_expr
-                mean_expression = cancer_mean
-                stat, pval = None, None
+                mean_expression = adata[adata.obs["cell_type"] == cell_type, gene].X.mean()
+                bayes_factor = None
             else:
-                expression = adata[adata.obs["cell_type"] == f"{cell_type}", gene].X
-                expression = expression.toarray().flatten()
-                mean_expression = expression.mean()
-                stat, pval = mannwhitneyu(cancer_expr, expression, alternative = "greater")
-   
-            
-            # Store results for each cell-type and each gene in a dictionary
+                de = model.differential_expression(
+                    groupby="cell_type",
+                    group1=reference_group,
+                    group2=cell_type,
+                    gene_list=[gene],
+                )
+                bayes_factor = de["bayes_factor"].values[0]
+                mean_expression = adata[adata.obs["cell_type"] == cell_type, gene].X.mean()
+
             results.append({
                 "Gene": gene,
                 "Cell Type": cell_type,
                 "Mean Expression": mean_expression,
-                "P-value": pval,
+                "Bayes Factor": bayes_factor
             })
 
-    # Output results/statistics to CSV 
     results_df = pd.DataFrame(results)
-    results_df.sort_values(by = ["Cell Type", "Gene"], inplace = True)
-    results_df.to_csv("results/mannwhitney_celltype_comparison.csv", index = False)
-
-    return adata
+    results_df.sort_values(by=["Cell Type", "Gene"], inplace=True)
+    results_df.to_csv("results/scvi_de_results.csv", index=False)
 
 
 def post_processing_and_clustering(adata):
-
-    # Perform PCA, kNN, UMAP
-    sc.tl.pca(adata)
-    sc.pp.neighbors(adata)
-    sc.tl.umap(adata)
 
     # Plot UMAP
     genes_of_interest = ["TXNRD1", "TXN"]
