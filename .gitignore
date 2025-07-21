@@ -7,3 +7,8 @@
 .pixi
 *.egg-info
 .Rproj.user
+
+# Ignore large files
+data/*.rds
+data/*.mtx
+
