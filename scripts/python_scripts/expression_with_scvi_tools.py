@@ -94,7 +94,7 @@ def read_exp_matrix(matrix_file, genes, barcodes):
     adata.obs_names = barcodes
     
     # Make variable names unique (required for scvi-tools)
-    adata.var_names_unique()
+    adata.var_names_make_unique()
 
     return adata
 
