@@ -1,0 +1,24 @@
+---
+title: "Lung_Cancer_Project"
+---
+
+## Quarto USF Lung Cancer Workflow
+
+[Single Cell Dataset](https://figshare.com/articles/dataset/E-MTAB-6149/14308775)
+
+### In R, we convert the .rds files so they can be used in Python workflow 
+
+```{r Convert RDS files from Figshare to appropriate files for python workflow, eval = F}
+library(Matrix)
+expr_sparse = readRDS("~/USF_Lung_Cancer/E-MTAB-6149_expr_sparse.rds")
+writeMM(m, file = "matrix.mtx")
+write.csv(rownames(m), "genes.csv")
+write.csv(colnames(m), "barcodes.csv")
+```
+
+Next, we run our snakemake and python scripts in order to perform the comparison in TXRN1 expression between cancer and immune cells.
+
+```{bash, Run Snakemake script to run python script}
+
+```
+
