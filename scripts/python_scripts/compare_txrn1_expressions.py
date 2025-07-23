@@ -2,7 +2,6 @@ import argparse
 import pandas as pd
 import pyreadr
 from scipy.io import mmread
-import anndata as ad
 import scanpy as sc
 import os 
 import matplotlib as mtplt
@@ -19,7 +18,7 @@ def main():
     sc.settings.figdir = output_directory
     sc.settings.verbosity = 'debug'
 
-
+    # Command line arguments 
     parser = argparse.ArgumentParser(description = "Txrn1 expression comparison script")
 
     parser.add_argument("--expression_matrix_file", type = str, required = True, 
@@ -34,12 +33,15 @@ def main():
     parser.add_argument("--annotation_file", type = str, required = True, 
     help = "Annotated celltypes")
 
+    parser.add_argument("--gene_list", type = str, required = True, 
+    help = "List of genes for analysis")
+   
     args = parser.parse_args()
     matrix_file, genes, barcodes, annotation_file = args.expression_matrix_file, args.genes, args.barcodes, args.annotation_file
 
     # Read in expression matrix and genes, barcodes
     adata = read_exp_matrix(matrix_file, genes, barcodes)
-    adata = plots_and_mannwhitney(adata, annotation_file)
+    adata = plots_and_mannwhitney(adata, annotation_file, args.gene_list)
     post_processing_and_clustering(adata)
 
 
@@ -59,6 +61,8 @@ def read_exp_matrix(matrix_file, genes, barcodes):
 
     # Normalize expression
     sc.pp.normalize_total(adata)
+
+    # Log transformation
     sc.pp.log1p(adata)
 
     # Scale 
@@ -66,7 +70,7 @@ def read_exp_matrix(matrix_file, genes, barcodes):
 
     return adata
 
-def plots_and_mannwhitney(adata, annotation_file):
+def plots_and_mannwhitney(adata, annotation_file, gene_list):
 
     # Load cell-type annotations
     annotations_dict = pyreadr.read_r(annotation_file)
@@ -87,9 +91,10 @@ def plots_and_mannwhitney(adata, annotation_file):
     # Plot to compare expression across cell-types (cancer cells vs immune cells)
     #genes_of_interest = ["TXNRD1", "TXN"]
 
-    dna_repair_genes = pd.read_excel("gene_list.xlsx")
+    dna_repair_genes = pd.read_excel(gene_list)
     genes_of_interest = [gene for gene in dna_repair_genes["geneid"]]
-    # Initalize results list to then output to CSV 
+
+# Initalize results list to then output to CSV 
     results = []
     reference_group = "Cancer cells"
 

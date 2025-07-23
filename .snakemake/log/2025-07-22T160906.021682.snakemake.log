@@ -1,0 +1,51 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                    count
+-------------------  -------
+sc_rna_seq_analysis        1
+total                      1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Tue Jul 22 16:09:06 2025]
+localrule sc_rna_seq_analysis:
+    input: data/matrix.mtx, data/genes.csv, data/barcodes.csv, data/E-MTAB-6149_cell_types.rds, data/dna_repair_genes.xlsx
+    output: results/mannwhitney_celltype_comparison.csv, results/figures
+    jobid: 0
+    reason: Forced execution
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: python scripts/python_scripts/expression_with_scanpy.py     --expression_matrix_file data/matrix.mtx     --genes data/genes.csv     --barcodes data/barcodes.csv     --annotation_file data/E-MTAB-6149_cell_types.rds     --gene_list data/dna_repair_genes.xlsx
+RuleException:
+CalledProcessError in file "/Users/ethanlittlestone/USF_Lung_Cancer/scripts/snakemake_scripts/sc_rnaseq_workflow.smk", line 14:
+Command 'set -euo pipefail;  python scripts/python_scripts/expression_with_scanpy.py     --expression_matrix_file data/matrix.mtx     --genes data/genes.csv     --barcodes data/barcodes.csv     --annotation_file data/E-MTAB-6149_cell_types.rds     --gene_list data/dna_repair_genes.xlsx' returned non-zero exit status 1.
+[Tue Jul 22 16:11:47 2025]
+Error in rule sc_rna_seq_analysis:
+    message: None
+    jobid: 0
+    input: data/matrix.mtx, data/genes.csv, data/barcodes.csv, data/E-MTAB-6149_cell_types.rds, data/dna_repair_genes.xlsx
+    output: results/mannwhitney_celltype_comparison.csv, results/figures
+    shell:
+        python scripts/python_scripts/expression_with_scanpy.py     --expression_matrix_file data/matrix.mtx     --genes data/genes.csv     --barcodes data/barcodes.csv     --annotation_file data/E-MTAB-6149_cell_types.rds     --gene_list data/dna_repair_genes.xlsx
+        (command exited with non-zero exit code)
+Removing output files of failed job sc_rna_seq_analysis since they might be corrupted:
+results/mannwhitney_celltype_comparison.csv, results/figures
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Tue Jul 22 16:11:47 2025]
+Error in rule sc_rna_seq_analysis:
+    message: None
+    jobid: 0
+    input: data/matrix.mtx, data/genes.csv, data/barcodes.csv, data/E-MTAB-6149_cell_types.rds, data/dna_repair_genes.xlsx
+    output: results/mannwhitney_celltype_comparison.csv, results/figures
+    shell:
+        python scripts/python_scripts/expression_with_scanpy.py     --expression_matrix_file data/matrix.mtx     --genes data/genes.csv     --barcodes data/barcodes.csv     --annotation_file data/E-MTAB-6149_cell_types.rds     --gene_list data/dna_repair_genes.xlsx
+        (command exited with non-zero exit code)
+Complete log(s): /Users/ethanlittlestone/USF_Lung_Cancer/.snakemake/log/2025-07-22T160906.021682.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

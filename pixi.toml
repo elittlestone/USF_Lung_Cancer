@@ -25,5 +25,11 @@ r-base = ">=4.5.1,<4.6"
 gfortran = ">=13.4.0,<13.5"
 clang = ">=20.1.8,<21"
 bat = ">=0.25.0,<0.26"
-
+config = ">=0.5.1,<0.6"
+nvim = "0.10.*"
+snakemake = ">=9.8.1,<10"
+python-igraph = ">=0.11.9,<0.12"
+leidenalg = ">=0.10.2,<0.11"
+python-pptx = ">=1.0.2,<2"
+imagemagick = ">=7.1.2_0,<8"
 [tasks]

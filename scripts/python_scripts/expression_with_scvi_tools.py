@@ -40,6 +40,9 @@ def main():
     parser.add_argument("--annotation_file", type = str, required = True, 
     help = "Annotated celltypes")
 
+    parser.add_argument("--gene_list", type = str, required = True, 
+    help = "Genes of interest for analysis")
+
     parser.add_argument("--n_epochs", type = int, default = 100,
     help = "Number of training epochs for scVI model")
 
@@ -67,10 +70,10 @@ def main():
     adata, model = probabilistic_modeling(adata, args.n_latent, args.n_layers, args.n_epochs)
     
     # Generate plots using scVI representations
-    plots(adata, model)
+    plots(adata, args.gene_list)
     
     # Dimensionality reduction and clustering using scVI
-    post_processing_and_clustering(adata)
+    post_processing_and_clustering(adata, args.gene_list)
     
     # Differential expression analysis using scVI
     run_de_analysis(adata, model)
@@ -171,11 +174,11 @@ def probabilistic_modeling(adata, n_latent=30, n_layers=1, n_epochs=100):
     return adata, model
 
 
-def plots(adata, model):
+def plots(adata, gene_list):
     """Generate plots using both raw and scVI-processed data"""
     
     # Load DNA repair genes from Excel file
-    dna_repair_genes = pd.read_excel("gene_list.xlsx")
+    dna_repair_genes = pd.read_excel(gene_list)
     genes_of_interest = [gene for gene in dna_repair_genes["geneid"] if gene in adata.var_names]
     
     print(f"Found {len(genes_of_interest)} genes of interest in the dataset")
@@ -359,11 +362,11 @@ def run_additional_scvi_analyses(adata, model):
         print(f"Could not compute all evaluation metrics: {str(e)}")
 
 
-def post_processing_and_clustering(adata):
+def post_processing_and_clustering(adata, gene_list):
     """Post-processing and visualization using scVI representations"""
 
     # Load genes of interest
-    dna_repair_genes = pd.read_excel("gene_list.xlsx")
+    dna_repair_genes = pd.read_excel(gene_list)
     genes_of_interest = [gene for gene in dna_repair_genes["geneid"] if gene in adata.var_names]
     
     # Perform Leiden clustering on scVI representation
