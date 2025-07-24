@@ -11,11 +11,12 @@ rule sc_rna_seq_analysis:
     csv = "results/mannwhitney_celltype_comparison.csv",
     figures_dir = directory("results/figures")
   shell:
-    "python scripts/python_scripts/expression_with_scanpy.py \
+    """
+    python scripts/python_scripts/expression_with_scanpy.py \
     --expression_matrix_file {input.matrix_file} \
     --genes {input.genes_file} \
     --barcodes {input.barcodes_file} \
     --annotation_file {input.annotation_file} \
-    --gene_list {input.gene_list}"
-
+    --gene_list {input.gene_list} \
+    --csv_output {output.csv}"""
 

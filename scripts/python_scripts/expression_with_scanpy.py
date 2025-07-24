@@ -37,17 +37,38 @@ def main():
     parser.add_argument("--gene_list", type = str, required = True, 
     help = "List of genes for analysis")
    
+    parser.add_argument("--csv_output", type = str, required = True,
+                        help = "Output csv for statistical tests")
     args = parser.parse_args()
-    matrix_file, genes, barcodes, annotation_file, gene_list = args.expression_matrix_file, args.genes, args.barcodes, args.annotation_file, args.gene_list
+
+    # Read in genes to analyze from excel file 
+    dna_repair_genes = pd.read_excel(args.gene_list)
+    genes_of_interest = [gene for gene in dna_repair_genes["geneid"]]
+
+    
+    matrix_file, genes, barcodes, annotation_file, csv_output = (args.expression_matrix_file, args.genes, 
+                                                                 args.barcodes, args.annotation_file, args.csv_output)
 
     # Read in expression matrix and genes, barcodes
     adata = read_exp_matrix(matrix_file, genes, barcodes)
-    adata = summary_plots(adata, annotation_file, gene_list)
-    statistical_tests(adata, gene_list)
-    post_processing_and_clustering(adata, gene_list)
+
+    # Create summary plots
+    adata = summary_plots(adata, annotation_file, genes_of_interest)
+
+    # Perform DGEA
+    statistical_tests(adata, genes_of_interest, csv_output)
+
+    # Clustering and UMAP 
+    post_processing_and_clustering(adata, genes_of_interest)
 
 
 def read_exp_matrix(matrix_file, genes, barcodes):
+    """
+    Function for reading in the expression matrix from an R object (.rds files)
+    @matrix_file : gene expression matrix
+    @genes : gene names obtained from cell-annotation file 
+    @barcodes: barcodes/cell_ids obtained from cell-annotation file
+    """
     # Load matrix
     matrix = mmread(matrix_file).tocsr().T
 
@@ -68,14 +89,14 @@ def read_exp_matrix(matrix_file, genes, barcodes):
     sc.pp.log1p(adata)
 
     # Store raw counts before scaling 
-    adata.raw = adata
+    adata.raw = adata.copy()
 
     # Scale 
     sc.pp.scale(adata)
 
     return adata
 
-def summary_plots(adata, annotation_file, gene_list):
+def summary_plots(adata, annotation_file, genes_of_interest):
 
     # Load cell-type annotations
     annotations_dict = pyreadr.read_r(annotation_file)
@@ -94,10 +115,6 @@ def summary_plots(adata, annotation_file, gene_list):
     adata.obs = adata.obs.join(annotations_df, how="left")
 
     # Plot to compare expression across cell-types (cancer cells vs immune cells)
-    #genes_of_interest = ["TXNRD1", "TXN"]
-
-    dna_repair_genes = pd.read_excel(gene_list)
-    genes_of_interest = [gene for gene in dna_repair_genes["geneid"]]
 
     for gene in tqdm(genes_of_interest):
 
@@ -115,10 +132,12 @@ def summary_plots(adata, annotation_file, gene_list):
     
     return adata
    
-def statistical_tests(adata, gene_list):
-    # Load in genes of interest
-    dna_repair_genes = pd.read_excel(gene_list)
-    genes_of_interest = [gene for gene in dna_repair_genes["geneid"]]
+def statistical_tests(adata, genes_of_interest, csv_output):
+    """
+    Run Mannwhitneyu tests to test for difference in expression of given genes in cancer vs other immune cells
+    @adata : Annotation data object (gene expression matrix + other metadata)
+    @genes_of_interest : genes to be tested 
+    """
 
     # Initalize results list to then output to CSV 
     results = []
@@ -155,12 +174,12 @@ def statistical_tests(adata, gene_list):
     # Output results/statistics to CSV 
     results_df = pd.DataFrame(results)
     results_df.sort_values(by = ["Cell Type", "Gene"], inplace = True)
-    results_df.to_csv("results/mannwhitney_celltype_comparison.csv", index = False)
+    results_df.to_csv(csv_output, index = False)
 
     return adata
 
 
-def post_processing_and_clustering(adata, gene_list):
+def post_processing_and_clustering(adata, genes_of_interest):
 
     # Perform PCA, kNN, UMAP
     sc.tl.pca(adata)
@@ -177,9 +196,7 @@ def post_processing_and_clustering(adata, gene_list):
 
     # UMAP of celltypes 
     sc.pl.umap(adata, color = "cell_type", show = False, palette = palette, save = "_celltypes.png")
-    #genes_of_interest = ["TXNRD1", "TXN"]
-    dna_repair_genes = pd.read_excel(gene_list)
-    genes_of_interest = [gene for gene in dna_repair_genes["geneid"]]
+    
     for gene in tqdm(genes_of_interest):
         sc.pl.umap(adata, color = gene, show=False, cmap = "inferno", vmin = 0, size = 8, vmax = "p99.5", save = f"_{gene}_expression.png")
         sc.pl.heatmap(

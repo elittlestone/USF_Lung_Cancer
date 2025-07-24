@@ -1,0 +1,27 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                    count
+-------------------  -------
+sc_rna_seq_analysis        1
+total                      1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Jul 23 10:13:08 2025]
+localrule sc_rna_seq_analysis:
+    input: data/matrix.mtx, data/genes.csv, data/barcodes.csv, data/E-MTAB-6149_cell_types.rds, data/junrang_genes.xlsx
+    output: results/mannwhitney_celltype_comparison.csv, results/figures
+    jobid: 0
+    reason: Missing output files: results/mannwhitney_celltype_comparison.csv, results/figures
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: python scripts/python_scripts/expression_with_scanpy.py     --expression_matrix_file data/matrix.mtx     --genes data/genes.csv     --barcodes data/barcodes.csv     --annotation_file data/E-MTAB-6149_cell_types.rds     --gene_list data/junrang_genes.xlsx
+[Wed Jul 23 10:16:02 2025]
+Finished jobid: 0 (Rule: sc_rna_seq_analysis)
+1 of 1 steps (100%) done
+Complete log(s): /Users/ethanlittlestone/USF_Lung_Cancer/.snakemake/log/2025-07-23T101308.560390.snakemake.log

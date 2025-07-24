@@ -1,0 +1,6 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+CyclicGraphException in rule sc_rna_seq_analysis in file "/Users/ethanlittlestone/USF_Lung_Cancer/scripts/snakemake_scripts/sc_rnaseq_workflow.smk", line 3:
+Cyclic dependency on rule sc_rna_seq_analysis.

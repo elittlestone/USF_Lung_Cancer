@@ -32,4 +32,6 @@ python-igraph = ">=0.11.9,<0.12"
 leidenalg = ">=0.10.2,<0.11"
 python-pptx = ">=1.0.2,<2"
 imagemagick = ">=7.1.2_0,<8"
+entrez-direct = ">=24.0,<25"
+pysradb = ">=2.2.2,<3"
 [tasks]

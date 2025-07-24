@@ -1,0 +1,38 @@
+---
+title: "ALK-positive lung cancer SC RNA-seq Workflow"
+date: today
+author: "Ethan Littlestone"
+format: 
+    html:
+        theme: cosmo
+        toc: true
+        toc-location: left
+        number-sections: true
+        code-fold: true
+        code-tools: true
+        smooth-scroll: true
+        highlight-style: github
+---
+
+## Downloading Gene Expression Data
+The first step in this analysis is to download the gene expression matrix files. For this analysis, we will be using only wild-type samples. I have consulted the supplementary material and subsequent supplementary figure 1 to find out which scRNA-seq samples are wild-type and which are ALK positive. The supplementary materials file can be downloaded in the Supporting information section [here](https://pmc.ncbi.nlm.nih.gov/articles/PMC11999889/)
+
+Once we know which samples we will be using, we can then download them. 
+The gene expression matrix files (.h5 files) can be found on the [GEO Database](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE274934). They can either be downloaded manually through the web, or via the *wget* command. 
+
+We can also optionally use the *pysradb* python package in order to cleanly get the GSM Ids and sample names from this experiment. We can get the corresponding SRP for our GSE using the *gse-to-srp* command, which can then be used to grab our metadata (GSM Ids and sample names).
+
+```{bash Download Gene Expression matrices, eval = F}
+pysradb gse-to-srp GSE274934
+pysradb metadata SRP526658 | grep 'scRNA-seq' | cut -f 4
+```
+
+
+I wrote a snakemake script in order to download the .h5 files from the GEO Database. 
+
+Once we have our .h5 files, we can proceed with the analysis steps. I wrote a python script in order to read in the .h5 files as AnnData objects, and then concatenated them. Batch correction therefore must be performed. 
+
+
+```{bash Snakemake Script for Running SCVI-tools Analysis, eval = F}
+
+```
