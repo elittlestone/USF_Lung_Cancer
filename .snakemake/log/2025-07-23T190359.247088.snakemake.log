@@ -1,0 +1,29 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job                  count
+-----------------  -------
+download_h5_files        1
+total                    1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Jul 23 19:03:59 2025]
+localrule download_h5_files:
+    jobid: 0
+    reason: Rules with neither input nor output files are always executed.
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: 
+    for url in https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8462nnn/GSM8462132/suppl/GSM8462132_AL11_GEX_filtered_feature_bc_matrix.h5 https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8462nnn/GSM8462130/suppl/GSM8462130_AL08_GEX_filtered_feature_bc_matrix.h5 https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8462nnn/GSM8462127/suppl/GSM8462127_AL04_GEX_filtered_feature_bc_matrix.h5 https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8462nnn/GSM8462126/suppl/GSM8462126_AL03_GEX_filtered_feature_bc_matrix.h5 https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8462nnn/GSM8462125/suppl/GSM8462125_AL02_GEX_filtered_feature_bc_matrix.h5; do
+    wget "$url" -P "data/"
+    done
+    
+[Wed Jul 23 19:20:29 2025]
+Finished jobid: 0 (Rule: download_h5_files)
+1 of 1 steps (100%) done
+Complete log(s): /Users/ethanlittlestone/USF_Lung_Cancer/.snakemake/log/2025-07-23T190359.247088.snakemake.log

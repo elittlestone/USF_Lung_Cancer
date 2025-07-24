@@ -1,0 +1,9 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+MissingInputException in rule sc_rna_seq_analysis in file "/Users/ethanlittlestone/USF_Lung_Cancer/scripts/snakemake_scripts/sc_rnaseq_workflow.smk", line 3:
+Missing input files for rule sc_rna_seq_analysis:
+    output: results/mannwhitney_celltype_comparison_junrang.csv, results/figures
+    affected files:
+        results/mannwhitney_celltype_comparison_jungrang.csv
