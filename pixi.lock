@@ -44,6 +44,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cairo-1.18.4-h6a3b0d2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cctools-1021.4-h617d6d1_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cctools_osx-arm64-1021.4-h356c9db_1.conda
+      - conda: https://conda.anaconda.org/bioconda/noarch/celltypist-1.7.1-pyhdfd78af_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/certifi-2025.6.15-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cffi-1.17.1-py311h3a79f62_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/charset-normalizer-3.4.2-pyhd8ed1ab_0.conda
@@ -335,6 +336,7 @@ environments:
       - conda: https://conda.anaconda.org/bioconda/noarch/pysradb-2.2.2-pyhdfd78af_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/pytest-8.4.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/python-3.11.13-hc22306f_0_cpython.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/python-annoy-1.17.3-py311h3f08180_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/python-dateutil-2.9.0.post0-pyhff2d567_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/python-fastjsonschema-2.21.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/python-igraph-0.11.9-py311h6dcbf12_0.conda
@@ -886,6 +888,24 @@ packages:
   license_family: Other
   size: 792740
   timestamp: 1752907675702
+- conda: https://conda.anaconda.org/bioconda/noarch/celltypist-1.7.1-pyhdfd78af_0.tar.bz2
+  sha256: 2c2fe6ae098fed5b6d2ee595bb84d0f405f3b37ab6cc2d53d076043f31cc02e7
+  md5: c06ee224bdb51d7b6a79068541c72c4f
+  depends:
+  - click >=7.1.2
+  - leidenalg >=0.9.0
+  - numpy >=1.19.0
+  - openpyxl >=3.0.4
+  - pandas >=1.0.5
+  - python >=3.6
+  - python-annoy
+  - requests >=2.23.0
+  - scanpy >=1.7.0
+  - scikit-learn >=0.24.1
+  license: MIT
+  license_family: MIT
+  size: 4950110
+  timestamp: 1750886669106
 - conda: https://conda.anaconda.org/conda-forge/noarch/certifi-2025.6.15-pyhd8ed1ab_0.conda
   sha256: d71c85835813072cd6d7ce4b24be34215cd90c104785b15a5d58f4cd0cb50778
   md5: 781d068df0cc2407d4db0ecfbb29225b
@@ -4509,6 +4529,19 @@ packages:
   license: Python-2.0
   size: 14573820
   timestamp: 1749048947732
+- conda: https://conda.anaconda.org/conda-forge/osx-arm64/python-annoy-1.17.3-py311h3f08180_2.conda
+  sha256: 86a2fc429a323c9f9fb4668ea3a9b99b8845f3bc5ad2aac8c7552f4d259dacb3
+  md5: 01d5684e3e19fc8443cda5e00ec28356
+  depends:
+  - __osx >=11.0
+  - libcxx >=17
+  - python >=3.11,<3.12.0a0
+  - python >=3.11,<3.12.0a0 *_cpython
+  - python_abi 3.11.* *_cp311
+  license: Apache-2.0
+  license_family: Apache
+  size: 54505
+  timestamp: 1725514130694
 - conda: https://conda.anaconda.org/conda-forge/noarch/python-dateutil-2.9.0.post0-pyhff2d567_1.conda
   sha256: a50052536f1ef8516ed11a844f9413661829aa083304dc624c5925298d078d79
   md5: 5ba79d7c71f03c678c8ead841f347d6e

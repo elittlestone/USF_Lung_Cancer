@@ -1,0 +1,15 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+IncompleteFilesException:
+The files below seem to be incomplete. If you are sure that certain files are not incomplete, mark them as complete with
+
+    snakemake --cleanup-metadata <filenames>
+
+To re-generate the files rerun your command with the --rerun-incomplete flag.
+Incomplete files:
+data/processed/concatenated_anndata.h5ad
+results/geo_figures/violin_qc.png
+results/geo_figures/scatter_total_counts_vs_per_mito_counts.png
+results/geo_figures/scatter_total_counts_vs_gene_counts.png
