@@ -1,0 +1,29 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                        count
+-----------------------  -------
+run_celltype_annotation        1
+total                          1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Jul 25 12:31:46 2025]
+localrule run_celltype_annotation:
+    input: data/processed/concatenated_anndata.h5ad, data/processed/vae_file
+    output: results/geo_figures/umap_celltypist.png
+    jobid: 0
+    reason: Forced execution
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: 
+    python scripts/python_scripts/ALK_positive_single_cell_workflow.py     --pre_processed_h5_file data/processed/concatenated_anndata.h5ad --skip_scvi_training     --vae_file data/processed/vae_file --csv_output_dir results/geo_csv     --figures_output_dir results/geo_figures/volcano_plots
+    
+[Fri Jul 25 12:44:28 2025]
+Finished jobid: 0 (Rule: run_celltype_annotation)
+1 of 1 steps (100%) done
+Complete log(s): /Users/ethanlittlestone/USF_Lung_Cancer/.snakemake/log/2025-07-25T123146.884448.snakemake.log

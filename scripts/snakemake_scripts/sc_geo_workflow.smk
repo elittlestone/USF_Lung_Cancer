@@ -20,7 +20,7 @@ rule run_scanpy_script:
     h5_dir = "data/wildtype_h5_files"
   output:
     conc_anndata_h5 = "data/processed/concatenated_anndata.h5ad",
-    vae_file = "data/processed/vae_file",
+    vae_file = directory("data/processed/vae_file"),
     violin_qc = "results/geo_figures/violin_qc.png",
     scatter_mito = "results/geo_figures/scatter_total_counts_vs_per_mito_counts.png",
     scatter_genes_by_counts = "results/geo_figures/scatter_total_counts_vs_gene_counts.png",
@@ -39,13 +39,14 @@ rule run_celltype_annotation:
     processed_h5ad_file = "data/processed/concatenated_anndata.h5ad",
     vae_file = directory("data/processed/vae_file")
   output:
-    celltypist_map = "results/geo_figures/umap_celltypist.png",
-    dgea_csv = "data/processed/all_celltypes_DGEA.csv"
+    celltypist_map = "results/geo_figures/umap_celltypist.png"
   params:
-    csv_output_dir = "data/processed"
+    csv_output_dir = "results/geo_csv",
+    figures_dir = directory("results/geo_figures/volcano_plots")
   shell:
     """
     python scripts/python_scripts/ALK_positive_single_cell_workflow.py \
     --pre_processed_h5_file {input.processed_h5ad_file} --skip_scvi_training \
-    --vae_file {input.vae_file} --csv_output_dir {params.csv_output_dir}
+    --vae_file {input.vae_file} --csv_output_dir {params.csv_output_dir} \
+    --figures_output_dir {params.figures_dir}
     """
