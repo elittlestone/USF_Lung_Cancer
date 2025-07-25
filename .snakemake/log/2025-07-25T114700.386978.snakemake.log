@@ -1,0 +1,58 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                        count
+-----------------------  -------
+run_celltype_annotation        1
+total                          1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Jul 25 11:47:02 2025]
+localrule run_celltype_annotation:
+    input: data/processed/concatenated_anndata.h5ad, data/processed/vae_file/model.pt
+    output: results/geo_figures/umap_celltypist.png
+    jobid: 0
+    reason: Set of input files has changed since last execution; Code has changed since last execution; Params have changed since last execution: Union of exclusive params before and now across all output: before: 'data/processed' now: 'results/geo_figures/volcano_plots','results/geo_csv' 
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: 
+    python scripts/python_scripts/ALK_positive_single_cell_workflow.py     --pre_processed_h5_file data/processed/concatenated_anndata.h5ad --skip_scvi_training     --vae_file data/processed/vae_file/model.pt --csv_output_dir results/geo_csv     --figures_output_dir results/geo_figures/volcano_plots
+    
+RuleException:
+CalledProcessError in file "/Users/ethanlittlestone/USF_Lung_Cancer/scripts/snakemake_scripts/sc_geo_workflow.smk", line 47:
+Command 'set -euo pipefail;  
+    python scripts/python_scripts/ALK_positive_single_cell_workflow.py     --pre_processed_h5_file data/processed/concatenated_anndata.h5ad --skip_scvi_training     --vae_file data/processed/vae_file/model.pt --csv_output_dir results/geo_csv     --figures_output_dir results/geo_figures/volcano_plots' returned non-zero exit status 1.
+[Fri Jul 25 11:47:43 2025]
+Error in rule run_celltype_annotation:
+    message: None
+    jobid: 0
+    input: data/processed/concatenated_anndata.h5ad, data/processed/vae_file/model.pt
+    output: results/geo_figures/umap_celltypist.png
+    shell:
+        
+    python scripts/python_scripts/ALK_positive_single_cell_workflow.py     --pre_processed_h5_file data/processed/concatenated_anndata.h5ad --skip_scvi_training     --vae_file data/processed/vae_file/model.pt --csv_output_dir results/geo_csv     --figures_output_dir results/geo_figures/volcano_plots
+    
+        (command exited with non-zero exit code)
+Removing output files of failed job run_celltype_annotation since they might be corrupted:
+results/geo_figures/umap_celltypist.png
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Fri Jul 25 11:47:43 2025]
+Error in rule run_celltype_annotation:
+    message: None
+    jobid: 0
+    input: data/processed/concatenated_anndata.h5ad, data/processed/vae_file/model.pt
+    output: results/geo_figures/umap_celltypist.png
+    shell:
+        
+    python scripts/python_scripts/ALK_positive_single_cell_workflow.py     --pre_processed_h5_file data/processed/concatenated_anndata.h5ad --skip_scvi_training     --vae_file data/processed/vae_file/model.pt --csv_output_dir results/geo_csv     --figures_output_dir results/geo_figures/volcano_plots
+    
+        (command exited with non-zero exit code)
+Complete log(s): /Users/ethanlittlestone/USF_Lung_Cancer/.snakemake/log/2025-07-25T114700.386978.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

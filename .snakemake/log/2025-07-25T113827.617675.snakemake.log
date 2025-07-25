@@ -1,0 +1,8 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+ChildIOException:
+File/directory is a child to another output:
+('/Users/ethanlittlestone/USF_Lung_Cancer/results/geo_figures', run_celltype_annotation)
+('/Users/ethanlittlestone/USF_Lung_Cancer/results/geo_figures/scatter_total_counts_vs_gene_counts.png', run_scanpy_script)

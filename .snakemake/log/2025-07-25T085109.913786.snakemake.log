@@ -1,0 +1,58 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                        count
+-----------------------  -------
+run_celltype_annotation        1
+total                          1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Fri Jul 25 08:51:09 2025]
+localrule run_celltype_annotation:
+    input: data/processed/concatenated_anndata.h5ad, data/processed/vae_file
+    output: results/geo_figures/umap_celltypist.png, data/processed/all_celltypes_DGEA.csv
+    jobid: 0
+    reason: Missing output files: results/geo_figures/umap_celltypist.png, data/processed/all_celltypes_DGEA.csv
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: 
+    python scripts/python_scripts/ALK_positive_single_cell_workflow.py     --pre_processed_h5_file data/processed/concatenated_anndata.h5ad --skip_scvi_training     --vae_file data/processed/vae_file --csv_output_dir data/processed
+    
+RuleException:
+CalledProcessError in file "/Users/ethanlittlestone/USF_Lung_Cancer/scripts/snakemake_scripts/sc_geo_workflow.smk", line 47:
+Command 'set -euo pipefail;  
+    python scripts/python_scripts/ALK_positive_single_cell_workflow.py     --pre_processed_h5_file data/processed/concatenated_anndata.h5ad --skip_scvi_training     --vae_file data/processed/vae_file --csv_output_dir data/processed' returned non-zero exit status 1.
+[Fri Jul 25 08:51:17 2025]
+Error in rule run_celltype_annotation:
+    message: None
+    jobid: 0
+    input: data/processed/concatenated_anndata.h5ad, data/processed/vae_file
+    output: results/geo_figures/umap_celltypist.png, data/processed/all_celltypes_DGEA.csv
+    shell:
+        
+    python scripts/python_scripts/ALK_positive_single_cell_workflow.py     --pre_processed_h5_file data/processed/concatenated_anndata.h5ad --skip_scvi_training     --vae_file data/processed/vae_file --csv_output_dir data/processed
+    
+        (command exited with non-zero exit code)
+Removing output files of failed job run_celltype_annotation since they might be corrupted:
+results/geo_figures/umap_celltypist.png
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Fri Jul 25 08:51:17 2025]
+Error in rule run_celltype_annotation:
+    message: None
+    jobid: 0
+    input: data/processed/concatenated_anndata.h5ad, data/processed/vae_file
+    output: results/geo_figures/umap_celltypist.png, data/processed/all_celltypes_DGEA.csv
+    shell:
+        
+    python scripts/python_scripts/ALK_positive_single_cell_workflow.py     --pre_processed_h5_file data/processed/concatenated_anndata.h5ad --skip_scvi_training     --vae_file data/processed/vae_file --csv_output_dir data/processed
+    
+        (command exited with non-zero exit code)
+Complete log(s): /Users/ethanlittlestone/USF_Lung_Cancer/.snakemake/log/2025-07-25T085109.913786.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

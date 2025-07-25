@@ -1,12 +1,14 @@
 import argparse
 import celltypist
 import glob
-import matplotlib as mtplt
-mtplt.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
 import os
 import pandas as pd
+import re
 import scanpy as sc
 import scvi
+import seaborn as sns
 import torch
 from tqdm import tqdm
 
@@ -35,6 +37,9 @@ def main():
 
     parser.add_argument("--csv_output_dir", type = str, required = False,
                         help = "Output csv for statistical tests")
+    
+    parser.add_argument("--figures_output_dir", type = str, required = False,
+                        help = "Output dir for figures")
 
     args = parser.parse_args()
 
@@ -44,13 +49,13 @@ def main():
     processed_and_concatenated_h5 = args.pre_processed_h5_file
     vae_file = args.vae_file
     csv_output_dir = args.csv_output_dir
-
-
+    figures_output_dir = args.figures_output_dir
     if args.skip_scvi_training:
         print("Skipping scVI training; loading preprocessed AnnData")
         adata_combined = sc.read_h5ad(processed_and_concatenated_h5)
-        celltype_annotation_with_celltypist(adata_combined)
-        differential_gene_expression(adata_combined, vae_file, csv_output_dir)
+        adata_for_celltypist = celltype_annotation_with_celltypist(adata_combined)
+        differential_gene_expression(adata_for_celltypist, vae_file, csv_output_dir)
+        scanpy_dgea(adata_for_celltypist, figures_output_dir)
     else:
         adata_combined = read_and_concat_h5_files(h5_directory)
         adata_combined = quality_control(adata_combined)
@@ -281,7 +286,7 @@ def celltype_annotation_with_celltypist(adata_combined, model_name = "Immune_All
     sc.pl.umap(
             adata_for_celltypist, 
             color = f"{results_key}_predicted_labels",
-            legend_loc = "on data",
+            legend_loc = "right margin",
             title = "CellTypist Cell Type Annotations",
             save = f"_{results_key}.png"
             )
@@ -289,8 +294,116 @@ def celltype_annotation_with_celltypist(adata_combined, model_name = "Immune_All
     return adata_for_celltypist
 
 
+def scanpy_dgea(adata_for_celltypist, figures_output_dir, groupby_key = "celltypist_predicted_labels", use_adjusted_pvals = True):
+    """
+    Run Scanpy's rank_genes_groups() for all groups and generate volcano plots using monkeybread package 
+    """
+    adata_for_celltypist.raw = None
+
+    os.makedirs(figures_output_dir, exist_ok = True)
+
+    print(f"Running DGEA with Scanpy for '{groupby_key}")
+    sc.tl.rank_genes_groups(
+            adata_for_celltypist,
+            groupby = groupby_key,
+            method = "wilcoxon",
+            key_added = "rank_genes_groups"
+            )
+    
+    
+    result = adata_for_celltypist.uns["rank_genes_groups"]
+    groups = result['names'].dtype.names
+    for group in groups:
+        # Generate heatmap per celltype 
+        sc.pl.rank_genes_groups_heatmap(
+            adata_for_celltypist,
+            groupby = groupby_key,
+            key = "rank_genes_groups",
+            n_genes = 10,
+            show = False,
+            cmap = "viridis",
+            swap_axes = True,
+            dendrogram = True,
+            save = True
+            )
+    
+        # Define the default filename Scanpy used (check your figdir)
+        default_filename_heat = os.path.join(sc.settings.figdir, 'rank_genes_groups_heatmap.pdf')
+
+        # Define your desired filename (make sure folder exists)
+        desired_filename_heat = os.path.join(figures_output_dir, f"heatmap_{group}.pdf")
+    
+        # Rename/move the file to your desired location/name
+        os.rename(default_filename_heat, desired_filename_heat)
+
+        # Generate dotplot per celltype 
+        sc.pl.rank_genes_groups_dotplot(
+            adata_for_celltypist,
+            groupby = groupby_key,
+            n_genes = 10,
+            standard_scale = 'var',
+            figsize = (8, 6),
+            save = True
+            )
+
+        # Define the default filename Scanpy used (check your figdir)
+        default_filename_dot = os.path.join(sc.settings.figdir, 'dotplot_.pdf')
+
+        # Define your desired filename (make sure folder exists)
+        desired_filename_dot = os.path.join(figures_output_dir, f"dotplot_{group}.pdf")
+
+        # Rename/move the file to your desired location/name
+        os.rename(default_filename_dot, desired_filename_dot)
+
+
+    print("Generating volcano plots with seaborn/matplotlib...")
+    
+    for group in groups:
+        print(f"Processing group : {group}")
+        df = pd.DataFrame({
+            "gene": result['names'][group],
+            "logfoldchanges": result['logfoldchanges'][group],
+            "pvals": result['pvals'][group],
+            "pvals_adj": result['pvals_adj'][group],
+            "scores": result['scores'][group]
+            }).dropna()
+
+        df["-log10(pval)"] = -np.log10(df["pvals_adj"] 
+                                       if use_adjusted_pvals else df["pvals"] + 1e-300)
+
+        df["significant"] = (df["logfoldchanges"].abs() >= 1) & ((df["pvals_adj"]if use_adjusted_pvals else df["pvals"]) < 0.05)
+
+        # Plot
+        plt.figure(figsize = (8, 6))
+        sns.scatterplot(
+                data = df,
+                x = "logfoldchanges",
+                y = "-log10(pval)",
+                hue = "significant",
+                palette = {True: "red", False: "gray"},
+                alpha = 0.7,
+                legend = False
+                )
+
+        plt.axvline(1, linestyle="--", color="black")
+        plt.axvline(-1, linestyle="--", color="black")
+        plt.axhline(-np.log10(0.05), linestyle="--", color="black")
+
+
+        plt.title(f"Volcano Plot: {group}")
+        plt.xlabel("Log2 Fold Change")
+        plt.ylabel("-log10 Adjusted p-value" if use_adjusted_pvals else "-log10 p-value")
+        plt.tight_layout()
+
+        # Save plot
+        safe_group = re.sub(r"[^\w\-]", "_", group)
+        plt.savefig(os.path.join(figures_output_dir, f"volcano_{safe_group}.png"), dpi=150)
+        plt.close()
 
 def differential_gene_expression(adata_combined, vae, csv_output_dir):
+
+    # scVI DGEA
+
     celltype_key = "celltypist_predicted_labels"
     output_dir = csv_output_dir
     vae = scvi.model.SCVI.load(vae, adata = adata_combined)
@@ -303,17 +416,14 @@ def differential_gene_expression(adata_combined, vae, csv_output_dir):
     for celltype in celltypes:
         print(f"Running scVI DGEA for cell type: {celltype}")
 
-        # Boolean masks for group and reference
-        group_mask = adata_combined.obs[celltype_key] == celltype
-        ref_mask = adata_combined.obs[celltype_key] != celltype
 
         # Run differential expression : group vs rest of cells
         differential_expr_results = vae.differential_expression(
-                group1 = group_mask,
-                group2 = ref_mask,
+                groupby = celltype_key,
+                group1 = celltype,
+                group2 = None,
                 mode = "change",
-                delta = 0.5,
-                output_file = os.path.join(csv_output_dir, f"DGEA_{celltype}.csv")
+                delta = 0.5
                 )
     
         differential_expr_results["celltype"] = celltype
@@ -323,9 +433,11 @@ def differential_gene_expression(adata_combined, vae, csv_output_dir):
     
     # Sort by celltype and then gene name 
     all_differential_expr_results_dataframe = all_differential_expr_results_dataframe.sort_values(
-            by = ["celltype", all_differential_expr_results_dataframe.index.name or "gene"], ascending = [True, True])
+            by = ["celltype"], ascending = True)
 
     # Save to CSV file 
     all_differential_expr_results_dataframe.to_csv(os.path.join(output_dir, "all_celltypes_DGEA.csv"))
+
+
 if __name__ == "__main__":
     main()
