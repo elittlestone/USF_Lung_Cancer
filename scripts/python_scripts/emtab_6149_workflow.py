@@ -208,10 +208,10 @@ def scvi_analysis_and_clustering(adata, processed_h5_file, vae_file):
 
     # Train scvi model
     print("Training scVI model...")
-    vae = scvi.model.SCVI(adata, n_layers = 2, n_latent = 30, gene_likelihood = "nb")
+    vae = scvi.model.SCVI(adata, n_layers = 2, n_latent = 30, gene_likelihood = "zinb")
 
     # Train the model
-    vae.train(max_epochs = 400, plan_kwargs = {"lr": 1e-3}, check_val_every_n_epoch = 10, accelerator = "gpu")
+    vae.train()
     vae.save(vae_file)
 
     print("Getting latent representation...")

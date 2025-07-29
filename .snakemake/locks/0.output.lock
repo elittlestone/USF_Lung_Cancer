@@ -1,0 +1,8 @@
+data/processed/emtab_6149/processed_anndata.h5ad
+data/processed/emtab_6149/vae_file
+results/emtab_figures/violin_qc.png
+results/emtab_figures/scatter_total_counts_vs_per_mito_counts.png
+results/emtab_figures/scatter_total_counts_vs_gene_counts.png
+results/emtab_figures/umap_samples_scvi.png
+results/emtab_figures/umap_leiden_scvi_clusters.png
+results/emtab_figures/umap_qc_metrics_scvi.png

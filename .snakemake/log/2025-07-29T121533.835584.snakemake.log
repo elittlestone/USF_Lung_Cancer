@@ -1,0 +1,25 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: mdc-1057-27-3.rc.usf.edu
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                    count
+-------------------  -------
+run_scvi_processing        1
+total                      1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Tue Jul 29 12:15:33 2025]
+localrule run_scvi_processing:
+    input: data/raw/emtab_6149/matrix.mtx, data/raw/emtab_6149/genes.csv, data/raw/emtab_6149/barcodes.csv, data/raw/emtab_6149/E-MTAB-6149_cell_types.rds
+    output: data/processed/emtab_6149/processed_anndata.h5ad, data/processed/emtab_6149/vae_file, results/emtab_figures/violin_qc.png, results/emtab_figures/scatter_total_counts_vs_per_mito_counts.png, results/emtab_figures/scatter_total_counts_vs_gene_counts.png, results/emtab_figures/umap_samples_scvi.png, results/emtab_figures/umap_leiden_scvi_clusters.png, results/emtab_figures/umap_qc_metrics_scvi.png
+    jobid: 0
+    reason: Missing output files: results/emtab_figures/umap_leiden_scvi_clusters.png, results/emtab_figures/violin_qc.png, data/processed/emtab_6149/processed_anndata.h5ad, data/processed/emtab_6149/vae_file, results/emtab_figures/scatter_total_counts_vs_gene_counts.png, results/emtab_figures/scatter_total_counts_vs_per_mito_counts.png, results/emtab_figures/umap_qc_metrics_scvi.png, results/emtab_figures/umap_samples_scvi.png
+    resources: tmpdir=/tmp
+Shell command: 
+    python scripts/python_scripts/emtab_6149_workflow.py     --expression_matrix_file data/raw/emtab_6149/matrix.mtx --genes data/raw/emtab_6149/genes.csv     --barcodes data/raw/emtab_6149/barcodes.csv --annotation_file data/raw/emtab_6149/E-MTAB-6149_cell_types.rds     --processed_h5ad_file data/processed/emtab_6149/processed_anndata.h5ad     --vae_file data/processed/emtab_6149/vae_file
+    
