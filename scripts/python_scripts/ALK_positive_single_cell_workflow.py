@@ -50,6 +50,8 @@ def main():
     vae_file = args.vae_file
     csv_output_dir = args.csv_output_dir
     figures_output_dir = args.figures_output_dir
+
+    # Can run script if scvi training already completed and have .h5ad file and vae object
     if args.skip_scvi_training:
         print("Skipping scVI training; loading preprocessed AnnData")
         adata_combined = sc.read_h5ad(processed_and_concatenated_h5)
@@ -309,11 +311,26 @@ def scanpy_dgea(adata_for_celltypist, figures_output_dir, groupby_key = "celltyp
             method = "wilcoxon",
             key_added = "rank_genes_groups"
             )
-    
+   
     
     result = adata_for_celltypist.uns["rank_genes_groups"]
+
     groups = result['names'].dtype.names
+
     for group in groups:
+            
+        # Get top DEG per celltype 
+        dgea_df = sc.get.rank_genes_groups_df(
+            adata_for_celltypist, 
+            key = "rank_genes_groups",
+            group = group
+            ).sort_values(by="logfoldchanges", ascending = False).head(10)
+        
+        degs = os.path.join(figures_output_dir, f"{group}_ranked_genes.csv")
+
+        # Output DEGs to csv 
+        dgea_df.to_csv(degs, index = False)
+
         # Generate heatmap per celltype 
         sc.pl.rank_genes_groups_heatmap(
             adata_for_celltypist,

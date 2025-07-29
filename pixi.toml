@@ -2,8 +2,8 @@
 name = "USF_Lung_Cancer"
 version = "0.1.0"
 authors = ["Ethan Littlestone <ethanlittlestone@gmail.com>"]
-channels = ["conda-forge", "bioconda"]
-platforms = ["osx-arm64"]
+channels = ["conda-forge", "bioconda", "rmg", "pytorch"]
+platforms = ["linux-64"]
 
 [dependencies]
 python = "3.11.*"
@@ -35,4 +35,13 @@ imagemagick = ">=7.1.2_0,<8"
 entrez-direct = ">=24.0,<25"
 pysradb = ">=2.2.2,<3"
 celltypist = ">=1.7.1,<2"
+eza = ">=0.23.0,<0.24"
+nodejs = ">=24.4.1,<24.5"
+ripgrep = ">=14.1.1,<15"
+zsh = ">=5.9,<6"
+fzf = ">=0.65.0,<0.66"
+tmux = ">=3.5,<4"
+zoxide = ">=0.9.8,<0.10"
+torchvision = ">=0.22.0,<0.23"
+pytorch-cuda = "12.4.*"
 [tasks]
