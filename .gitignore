@@ -2,13 +2,11 @@
 */.ipynb_checkpoints/*
 */.snakemake
 /.quarto/
-
 # pixi environments
 .pixi
 *.egg-info
 .Rproj.user
 
 # Ignore large files
-data/*.rds
-data/*.mtx
+*.mtx
 

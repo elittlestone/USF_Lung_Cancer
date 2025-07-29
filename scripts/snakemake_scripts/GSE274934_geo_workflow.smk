@@ -18,7 +18,7 @@ rule run_scanpy_script:
   input:
     h5_dir = "data/raw/GSE274934/wildtype_h5_files"
   output:
-    conc_anndata_h5 = "data/processed/GSE274934/concatenated_anndata.h5ad",
+    processed_h5ad = "data/processed/GSE274934/processed_anndata.h5ad",
     vae_file = directory("data/processed/GSE274934/vae_file"),
     violin_qc = "results/geofigures/GSE274934/violin_qc.png",
     scatter_mito = "results/geofigures/GSE274934/scatter_total_counts_vs_per_mito_counts.png",
@@ -29,7 +29,7 @@ rule run_scanpy_script:
   shell:
     """
     python scripts/python_scripts/ALK_positive_single_cell_workflow.py \
-    --h5_directory {input.h5_dir} --pre_processed_h5_file {output.conc_anndata_h5} \
+    --h5_directory {input.h5_dir} --pre_processed_h5_file {output.processed_h5ad} \
     --vae_file {output.vae_file}
     """
 
