@@ -1,0 +1,55 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+Using shell: /Users/ethanlittlestone/USF_Lung_Cancer/.pixi/envs/default/bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                    count
+-------------------  -------
+all                        1
+download_atac_files        1
+total                      2
+
+Select jobs to execute...
+Execute 1 jobs...
+[Thu Jul 31 12:31:01 2025]
+localrule download_atac_files:
+    output: data/raw/GSE274934/ATAC/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']_['AL08', 'AL10', 'AL11', 'AL12', 'AL05']_ATAC_['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz']
+    jobid: 1
+    reason: Missing output files: data/raw/GSE274934/ATAC/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']_['AL08', 'AL10', 'AL11', 'AL12', 'AL05']_ATAC_['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz']
+    wildcards: gsm=['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143'], sample=['AL08', 'AL10', 'AL11', 'AL12', 'AL05'], filename=['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz']
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: 
+    wget -nc https://ftp.ncbi.nlm.nih.gov/geo/samples/['GSM84nnn/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']/suppl/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']_['AL08', 'AL10', 'AL11', 'AL12', 'AL05']_ATAC_['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz'] -O data/raw/GSE274934/ATAC/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']_['AL08', 'AL10', 'AL11', 'AL12', 'AL05']_ATAC_['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz']
+    
+RuleException:
+CalledProcessError in file "/Users/ethanlittlestone/USF_Lung_Cancer/scripts/snakemake_scripts/GSE274934_ATAC_workflow.smk", line 30:
+Command 'set -euo pipefail;  
+    wget -nc https://ftp.ncbi.nlm.nih.gov/geo/samples/['GSM84nnn/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']/suppl/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']_['AL08', 'AL10', 'AL11', 'AL12', 'AL05']_ATAC_['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz'] -O data/raw/GSE274934/ATAC/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']_['AL08', 'AL10', 'AL11', 'AL12', 'AL05']_ATAC_['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz']' returned non-zero exit status 2.
+[Thu Jul 31 12:31:01 2025]
+Error in rule download_atac_files:
+    message: None
+    jobid: 1
+    output: data/raw/GSE274934/ATAC/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']_['AL08', 'AL10', 'AL11', 'AL12', 'AL05']_ATAC_['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz']
+    shell:
+        
+    wget -nc https://ftp.ncbi.nlm.nih.gov/geo/samples/['GSM84nnn/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']/suppl/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']_['AL08', 'AL10', 'AL11', 'AL12', 'AL05']_ATAC_['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz'] -O data/raw/GSE274934/ATAC/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']_['AL08', 'AL10', 'AL11', 'AL12', 'AL05']_ATAC_['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz']
+    
+        (command exited with non-zero exit code)
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look below for error messages
+[Thu Jul 31 12:31:03 2025]
+Error in rule download_atac_files:
+    message: None
+    jobid: 1
+    output: data/raw/GSE274934/ATAC/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']_['AL08', 'AL10', 'AL11', 'AL12', 'AL05']_ATAC_['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz']
+    shell:
+        
+    wget -nc https://ftp.ncbi.nlm.nih.gov/geo/samples/['GSM84nnn/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']/suppl/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']_['AL08', 'AL10', 'AL11', 'AL12', 'AL05']_ATAC_['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz'] -O data/raw/GSE274934/ATAC/['GSM8462144', 'GSM8462145', 'GSM8462146', 'GSM8462147', 'GSM8462143']_['AL08', 'AL10', 'AL11', 'AL12', 'AL05']_ATAC_['fragments.tsv.gz', 'peaks.bed.gz', 'singlecell.csv.gz']
+    
+        (command exited with non-zero exit code)
+Complete log(s): /Users/ethanlittlestone/USF_Lung_Cancer/.snakemake/log/2025-07-31T123101.404693.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

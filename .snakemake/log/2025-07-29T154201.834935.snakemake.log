@@ -1,0 +1,44 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                    count
+-------------------  -------
+run_scvi_processing        1
+total                      1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Tue Jul 29 15:42:01 2025]
+localrule run_scvi_processing:
+    input: data/raw/emtab_6149/matrix.mtx, data/raw/emtab_6149/genes.csv, data/raw/emtab_6149/barcodes.csv, data/raw/emtab_6149/E-MTAB-6149_cell_types.rds
+    output: data/processed/emtab_6149/processed_anndata.h5ad, data/processed/emtab_6149/vae_file, results/emtab_6149/figures/violin_qc.png, results/emtab_6149/figures/scatter_total_counts_vs_per_mito_counts.png, results/emtab_6149/figures/scatter_total_counts_vs_gene_counts.png, results/emtab_6149/figures/umap_samples_scvi.png, results/emtab_6149/figures/umap_leiden_scvi_clusters.png, results/emtab_6149/figures/umap_qc_metrics_scvi.png
+    jobid: 0
+    reason: Missing output files: results/emtab_6149/figures/scatter_total_counts_vs_per_mito_counts.png, results/emtab_6149/figures/scatter_total_counts_vs_gene_counts.png, data/processed/emtab_6149/vae_file, data/processed/emtab_6149/processed_anndata.h5ad, results/emtab_6149/figures/umap_qc_metrics_scvi.png, results/emtab_6149/figures/umap_samples_scvi.png, results/emtab_6149/figures/umap_leiden_scvi_clusters.png, results/emtab_6149/figures/violin_qc.png
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: 
+    python scripts/python_scripts/emtab_6149_workflow.py     --expression_matrix_file data/raw/emtab_6149/matrix.mtx --genes data/raw/emtab_6149/genes.csv     --barcodes data/raw/emtab_6149/barcodes.csv --annotation_file data/raw/emtab_6149/E-MTAB-6149_cell_types.rds     --processed_h5ad_file data/processed/emtab_6149/processed_anndata.h5ad     --vae_file data/processed/emtab_6149/vae_file
+    
+Terminating processes on user request, this might take some time.
+RuleException:
+CalledProcessError in file "/Users/ethanlittlestone/USF_Lung_Cancer/scripts/snakemake_scripts/e-mtab-6149_workflow.smk", line 18:
+Command 'set -euo pipefail;  
+    python scripts/python_scripts/emtab_6149_workflow.py     --expression_matrix_file data/raw/emtab_6149/matrix.mtx --genes data/raw/emtab_6149/genes.csv     --barcodes data/raw/emtab_6149/barcodes.csv --annotation_file data/raw/emtab_6149/E-MTAB-6149_cell_types.rds     --processed_h5ad_file data/processed/emtab_6149/processed_anndata.h5ad     --vae_file data/processed/emtab_6149/vae_file' returned non-zero exit status 1.
+[Tue Jul 29 15:42:36 2025]
+Error in rule run_scvi_processing:
+    message: None
+    jobid: 0
+    input: data/raw/emtab_6149/matrix.mtx, data/raw/emtab_6149/genes.csv, data/raw/emtab_6149/barcodes.csv, data/raw/emtab_6149/E-MTAB-6149_cell_types.rds
+    output: data/processed/emtab_6149/processed_anndata.h5ad, data/processed/emtab_6149/vae_file, results/emtab_6149/figures/violin_qc.png, results/emtab_6149/figures/scatter_total_counts_vs_per_mito_counts.png, results/emtab_6149/figures/scatter_total_counts_vs_gene_counts.png, results/emtab_6149/figures/umap_samples_scvi.png, results/emtab_6149/figures/umap_leiden_scvi_clusters.png, results/emtab_6149/figures/umap_qc_metrics_scvi.png
+    shell:
+        
+    python scripts/python_scripts/emtab_6149_workflow.py     --expression_matrix_file data/raw/emtab_6149/matrix.mtx --genes data/raw/emtab_6149/genes.csv     --barcodes data/raw/emtab_6149/barcodes.csv --annotation_file data/raw/emtab_6149/E-MTAB-6149_cell_types.rds     --processed_h5ad_file data/processed/emtab_6149/processed_anndata.h5ad     --vae_file data/processed/emtab_6149/vae_file
+    
+        (command exited with non-zero exit code)
+Complete log(s): /Users/ethanlittlestone/USF_Lung_Cancer/.snakemake/log/2025-07-29T154201.834935.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

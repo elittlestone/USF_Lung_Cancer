@@ -1,0 +1,28 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                    count
+-------------------  -------
+gene_specific_plots        1
+total                      1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Wed Jul 30 14:28:06 2025]
+localrule gene_specific_plots:
+    input: data/processed/EMTAB_6149/processed_anndata.h5ad, data/raw/EMTAB_6149/dna_repair_genes.xlsx
+    jobid: 0
+    reason: Rules with a run or shell declaration but no output are always executed.
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: 
+    python scripts/python_scripts/EMTAB_6149_workflow.py     --processed_h5ad_file data/processed/EMTAB_6149/processed_anndata.h5ad --gene_list data/raw/EMTAB_6149/dna_repair_genes.xlsx     --figures_output results/EMTAB_6149/figures --vae_file data/processed/EMTAB_6149/vae_file     --csv_output results/EMTAB_6149/csvs
+    
+[Wed Jul 30 16:44:45 2025]
+Finished jobid: 0 (Rule: gene_specific_plots)
+1 of 1 steps (100%) done
+Complete log(s): /Users/ethanlittlestone/USF_Lung_Cancer/.snakemake/log/2025-07-30T142806.479372.snakemake.log

@@ -1,0 +1,79 @@
+---
+title: "GSE274934 Lung Cancer ATAC Workflow"
+date: today
+author: "Ethan Littlestone"
+execute:
+    echo: true
+    eval: true
+format: 
+    html:
+        theme: cosmo
+        toc: true
+        toc-location: left
+        number-sections: true
+        code-fold: true
+        code-tools: true
+        smooth-scroll: true
+        highlight-style: github
+        self-contained: true
+---
+
+
+```{bash Get sample Ids}
+mkdir ../../data/raw/GSE274934/ATAC
+
+# Get SRP for our given GSE (experiment)
+pysradb gse-to-srp GSE274934
+
+# Get metadata and GSM Ids and Sample Ids
+pysradb metadata SRP526658 | grep 'ATAC-seq' | cut -f 4 | \
+awk -F'[:,]' '{gsub(/^ /,"",$2); print $1 "," $2}' > ../../data/raw/GSE274934/ATAC/GSM_IDS_and_Sample_IDS.txt
+cat ../../data/raw/GSE274934/ATAC/GSM_IDS_and_Sample_IDS.txt
+
+# Output 
+```
+
+```{python Snakemake script}
+
+#| eval: false
+#| echo: false
+
+gsm_ids = config["single_cell_ATAC"]["gsm_ids"]
+sample_ids = config["single_cell_ATAC"]["sample_ids"]
+
+
+ATAC_FILES = ["fragments.tsv.gz", "peaks.bed.gz", "singlecell.csv.gz"]
+
+
+def atac_url(gsm, sample, filename):
+  return f"https://ftp.ncbi.nlm.nih.gov/geo/samples/{gsm[:7]}nnn/{gsm}/suppl/{gsm}_{sample}_ATAC_{filename}"
+
+
+def output_path(gsm, sample, filename):
+    return f"data/raw/GSE274934/ATAC/{gsm}_{sample}_ATAC_{filename}"
+
+
+all_files = expand(output_path(gsm = gsm_ids, sample = sample_ids, filename = ATAC_FILES),
+                   gsm = gsm_ids, sample = sample_ids, filename = ATAC_FILES)
+
+
+rule all:
+  input:
+    all_files
+
+rule download_atac_files:
+  output:
+    path = "data/raw/GSE274934/ATAC/{gsm}_{sample}_ATAC_{filename}"
+  params:
+    url = lambda wildcards: atac_url(wildcards.gsm, wildcards.sample, wildcards.filename)
+  shell:
+    """
+    wget -nc {params.url} -O {output.path}
+    """
+
+```
+
+
+```{bash}
+snakemake -s ../snakemake_scripts/GSE274934_ATAC_workflow.smk -p --cores 8
+```

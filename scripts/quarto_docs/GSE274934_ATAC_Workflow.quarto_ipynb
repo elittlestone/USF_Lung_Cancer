@@ -1,0 +1,116 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"GSE274934 Lung Cancer ATAC Workflow\"\n",
+        "date: today\n",
+        "author: \"Ethan Littlestone\"\n",
+        "execute:\n",
+        "    echo: true\n",
+        "    eval: true\n",
+        "format: \n",
+        "    html:\n",
+        "        theme: cosmo\n",
+        "        toc: true\n",
+        "        toc-location: left\n",
+        "        number-sections: true\n",
+        "        code-fold: true\n",
+        "        code-tools: true\n",
+        "        smooth-scroll: true\n",
+        "        highlight-style: github\n",
+        "        self-contained: true\n",
+        "---\n"
+      ],
+      "id": "3390d670"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "mkdir ../../data/raw/GSE274934/ATAC\n",
+        "\n",
+        "# Get SRP for our given GSE (experiment)\n",
+        "pysradb gse-to-srp GSE274934\n",
+        "\n",
+        "# Get metadata and GSM Ids and Sample Ids\n",
+        "pysradb metadata SRP526658 | grep 'ATAC-seq' | cut -f 4 | \\\n",
+        "awk -F'[:,]' '{gsub(/^ /,\"\",$2); print $1 \",\" $2}' > ../../data/raw/GSE274934/ATAC/GSM_IDS_and_Sample_IDS.txt\n",
+        "cat ../../data/raw/GSE274934/ATAC/GSM_IDS_and_Sample_IDS.txt\n",
+        "\n",
+        "# Output "
+      ],
+      "id": "2e4bd5cf",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "```{python Snakemake script}\n",
+        "\n",
+        "#| eval: false\n",
+        "#| echo: false\n",
+        "\n",
+        "gsm_ids = config[\"single_cell_ATAC\"][\"gsm_ids\"]\n",
+        "sample_ids = config[\"single_cell_ATAC\"][\"sample_ids\"]\n",
+        "\n",
+        "\n",
+        "ATAC_FILES = [\"fragments.tsv.gz\", \"peaks.bed.gz\", \"singlecell.csv.gz\"]\n",
+        "\n",
+        "\n",
+        "def atac_url(gsm, sample, filename):\n",
+        "  return f\"https://ftp.ncbi.nlm.nih.gov/geo/samples/{gsm[:7]}nnn/{gsm}/suppl/{gsm}_{sample}_ATAC_{filename}\"\n",
+        "\n",
+        "\n",
+        "def output_path(gsm, sample, filename):\n",
+        "    return f\"data/raw/GSE274934/ATAC/{gsm}_{sample}_ATAC_{filename}\"\n",
+        "\n",
+        "\n",
+        "all_files = expand(output_path(gsm = gsm_ids, sample = sample_ids, filename = ATAC_FILES),\n",
+        "                   gsm = gsm_ids, sample = sample_ids, filename = ATAC_FILES)\n",
+        "\n",
+        "\n",
+        "rule all:\n",
+        "  input:\n",
+        "    all_files\n",
+        "\n",
+        "rule download_atac_files:\n",
+        "  output:\n",
+        "    path = \"data/raw/GSE274934/ATAC/{gsm}_{sample}_ATAC_{filename}\"\n",
+        "  params:\n",
+        "    url = lambda wildcards: atac_url(wildcards.gsm, wildcards.sample, wildcards.filename)\n",
+        "  shell:\n",
+        "    \"\"\"\n",
+        "    wget -nc {params.url} -O {output.path}\n",
+        "    \"\"\"\n",
+        "\n",
+        "```\n"
+      ],
+      "id": "c88eb556"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "snakemake -s ../snakemake_scripts/GSE274934_ATAC_workflow.smk -p --cores 8"
+      ],
+      "id": "a1fdcc9a",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "bash",
+      "language": "bash",
+      "display_name": "Bash",
+      "path": "/Users/ethanlittlestone/USF_Lung_Cancer/.pixi/envs/default/share/jupyter/kernels/bash"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

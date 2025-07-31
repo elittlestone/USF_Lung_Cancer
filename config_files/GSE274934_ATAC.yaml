@@ -1,0 +1,14 @@
+single_cell_ATAC:
+  gsm_ids:
+    - GSM8462144
+    - GSM8462145
+    - GSM8462146
+    - GSM8462147
+    - GSM8462143
+
+  sample_ids:
+    - AL08
+    - AL10
+    - AL11
+    - AL12
+    - AL05

@@ -1,6 +1,5 @@
 import argparse
 import matplotlib.pyplot as plt
-import numpy as np
 import os 
 import pandas as pd
 import pyreadr
@@ -14,7 +13,7 @@ from tqdm import tqdm
 def main():
 
     # Directory where figures generated will be outputted 
-    output_directory = "results/E-MTAB-6149_figures"
+    output_directory = "results/EMTAB_6149/figures"
     os.makedirs(output_directory, exist_ok=True)
     sc.settings.figdir = output_directory
     sc.settings.verbosity = 'debug'
@@ -22,57 +21,68 @@ def main():
     # Command line arguments 
     parser = argparse.ArgumentParser(description = "Gene expression comparison script")
 
-    parser.add_argument("--expression_matrix_file", type = str, required = True, 
+    parser.add_argument("--expression_matrix_file", type = str, required = False, 
     help = "Sparse expression matrix file")
 
-    parser.add_argument("--genes", type = str, required = True, 
+    parser.add_argument("--genes", type = str, required = False, 
     help = "Genes extracted from matrix file")
 
-    parser.add_argument("--barcodes", type = str, required = True, 
+    parser.add_argument("--barcodes", type = str, required = False, 
     help = "Barcodes extracted from matrix file")
 
-    parser.add_argument("--annotation_file", type = str, required = True, 
+    parser.add_argument("--annotation_file", type = str, required = False, 
     help = "Annotated celltypes")
 
     parser.add_argument("--processed_h5ad_file", type = str, required = True,
                         help = "Processed h5ad file")
 
-    parser.add_argument("--vae_file", type = str, required = True,
+    parser.add_argument("--vae_file", type = str, required = False,
                         help = "Trained model")
 
     parser.add_argument("--gene_list", type = str, required = False, 
     help = "List of genes for analysis")
    
-    parser.add_argument("--csv_output", type = str, required = False,
+    parser.add_argument("--figures_output", type = str, required = False,
+                        help = "Output figures directory")
+    
+    parser.add_argument("--csv_output_dir", type = str, required = False,
                         help = "Output csv for statistical tests")
+
     args = parser.parse_args()
 
-    # Read in genes to analyze from excel file 
-    #dna_repair_genes = pd.read_excel(args.gene_list)
-    #genes_of_interest = [gene for gene in dna_repair_genes["geneid"]]
 
+    # Define CLI arguments 
     
-    matrix_file, genes, barcodes, annotation_file, processed_h5ad_file, vae_file, gene_list, csv_output = (
-            args.expression_matrix_file, args.genes, args.barcodes, args.annotation_file, 
-                           args.processed_h5ad_file, args.vae_file, args.gene_list, args.csv_output)
+    matrix_file, genes, barcodes, annotation_file, processed_h5ad_file, vae_file, gene_list, figures_output, csv_output_dir = (
+            args.expression_matrix_file, args.genes, args.barcodes, args.annotation_file, args.processed_h5ad_file, 
+            args.vae_file, args.gene_list, args.figures_output, args.csv_output_dir)
+    
+    # Read in genes to analyze from excel file 
+    dna_repair_genes = pd.read_excel(gene_list)
+    genes_of_interest = [dna_repair_gene for dna_repair_gene in dna_repair_genes["geneid"]]
 
     # Read in expression matrix and genes, barcodes
-    adata = read_exp_matrix(matrix_file, genes, barcodes)
+    #adata = read_exp_matrix(matrix_file, genes, barcodes)
 
     # Merge pre-identified celltype annotations with expression matrix 
-    adata = merge_annotations_with_expression_matrix(adata, annotation_file)
+    #adata = merge_annotations_with_expression_matrix(adata, annotation_file)
 
     # Perform QC steps
-    adata = quality_control(adata)
+    #adata = quality_control(adata)
 
     # Preprocess/setup AnnData for scvi traiing
-    adata = pre_processing(adata)
+    #adata = pre_processing(adata)
 
     # Train scvi model 
-    scvi_analysis_and_clustering(adata, processed_h5ad_file, vae_file)
+    #adata = scvi_analysis_and_clustering(adata, processed_h5ad_file, vae_file)
     
+    # Caluclate Plots for DNA Repair Genes
+    adata = gene_specific_plots(processed_h5ad_file, genes_of_interest, figures_output)
+
     # Perform DGEA
-    #statistical_tests(adata, genes_of_interest, csv_output)
+    os.makedirs(csv_output_dir, exist_ok = True)
+    scvi_differential_expression(adata, vae_file, genes_of_interest, csv_output_dir)
+    statistical_tests(adata, genes_of_interest, csv_output_dir)
 
 
 
@@ -101,7 +111,9 @@ def read_exp_matrix(matrix_file, genes, barcodes):
 
 
 def merge_annotations_with_expression_matrix(adata, annotation_file):
-
+    """
+    Read in expression matrix and join with annotated celltypes file
+    """
     # Load cell-type annotations
     annotations_dict = pyreadr.read_r(annotation_file)
     annotations_df = annotations_dict[None]
@@ -119,7 +131,7 @@ def merge_annotations_with_expression_matrix(adata, annotation_file):
     adata.obs = adata.obs.join(annotations_df, how="left")
 
     # Add batch labels to anndata object 
-    adata.obs["batch"] = adata.obs_names.str.split("_").str[-1].astype(int)
+    adata.obs["batch"] = adata.obs_names.str.split("_").str[-1].astype(str)
     
     return adata 
 
@@ -211,7 +223,7 @@ def scvi_analysis_and_clustering(adata, processed_h5_file, vae_file):
     vae = scvi.model.SCVI(adata, n_layers = 2, n_latent = 30, gene_likelihood = "zinb")
 
     # Train the model
-    vae.train()
+    vae.train(accelerator = "mps")
     vae.save(vae_file)
 
     print("Getting latent representation...")
@@ -249,39 +261,102 @@ def scvi_analysis_and_clustering(adata, processed_h5_file, vae_file):
     return adata, vae
 
 
+def gene_specific_plots(processed_h5ad_file, genes_of_interest, figures_output_dir):
+    """
+    Create UMAPs, Violin, and Dotplots for genes of interest
+    """
 
-def summary_plots(adata, genes_of_interest):
-    # Plot to compare expression across cell-types (cancer cells vs immune cells)
-
+    adata = sc.read_h5ad(processed_h5ad_file)
+    n = len(adata.obs["cell_type"].unique())
+    palette = sns.color_palette("tab20", n)
+    
+    # UMAP of celltypes 
+    sc.pl.umap(adata, color = "cell_type", show = False, palette = palette, save = "_celltypes.png")
+   
+    # All genes in one Dotplot 
+    sc.pl.dotplot(adata, var_names = genes_of_interest, groupby = "cell_type", standard_scale = "var", show = False, save = "all_genes.png")
+            
+    # Generate UMAPs and Dotplots of Genes of Interest 
     for gene in tqdm(genes_of_interest):
+        sc.pl.umap(adata, color = gene, show = False, cmap = "inferno", vmin = 0, size = 8, vmax = "p99.5", save = f"_{gene}.png" )
+    
 
-        # Violin plot
+        # Violin Plot 
         sc.pl.violin(adata, keys=gene, groupby="cell_type", show = False, stripplot = True)
         plt.gcf().set_size_inches(12, 6)
         plt.xticks(rotation = 45, ha = 'right')  # rotate labels for better readability
-        plt.savefig(f"results/figures/violin_{gene}_cancer_vs_immune_cells.png", bbox_inches='tight', dpi=300)
-        plt.close("all")
-
-        # Dotplot
-        sc.pl.dotplot(adata, gene, groupby="cell_type", show = False)
-        plt.savefig(f"results/figures/dotplot_{gene}_cancer_vs_immune_cells.png", bbox_inches='tight', dpi=300)
+        plt.savefig(f"{figures_output_dir}/violin_{gene}_cancer_vs_immune_cells.png", bbox_inches='tight', dpi=300)
         plt.close("all")
     
-    return adata
-   
+    return adata 
+
 def statistical_tests(adata, genes_of_interest, csv_output):
     """
     Run Mannwhitneyu tests to test for difference in expression of given genes in cancer vs other immune cells
     @adata : Annotation data object (gene expression matrix + other metadata)
     @genes_of_interest : genes to be tested 
     """
-    pass
+    # Define reference group vs other celltypes to test against 
+    reference_group = "Cancer cells"
+    all_cell_types = adata.obs["cell_type"].unique().tolist()
+    non_cancer_cells = [celltype for celltype in all_cell_types if celltype != reference_group]
+   
+    adata.layers["counts"] = adata.X.copy()
 
+    # Normalize expression values 
+    sc.pp.normalize_total(adata, target_sum = 1e4)
 
-    return adata
+    # Log transform 
+    sc.pp.log1p(adata)
 
+    # Run wilcoxon rank sum test between cancer cells and other celltypes 
+    
+    sc.tl.rank_genes_groups(adata, groupby = "cell_type", groups = non_cancer_cells, 
+                             reference = reference_group, method = "wilcoxon")
+    
+    # Loop through each gene to get test results per celltype 
+    all_results = []
+    for group in non_cancer_cells:
+        df = sc.get.rank_genes_groups_df(adata, group = group)
+        df = df[df['names'].isin(genes_of_interest)]
+        df['tested_group'] = group
+        all_results.append(df)
 
+    # Output all statistical test results to csv 
+    combined_df = pd.concat(all_results, ignore_index = True)
+    combined_df.to_csv(os.path.join(csv_output, "wilcoxon_degs.csv"), index = False)
 
+def scvi_differential_expression(adata, vae_file, genes_of_interest, csv_output_dir):
+    """
+    Differential expression testing with Bayesian approach 
+    """
+    # Load trained model 
+    vae = scvi.model.SCVI.load(vae_file, adata)
 
+    # Define reference group vs other celltypes 
+    reference_group = "Cancer cells"
+    all_cell_types = adata.obs["cell_type"].unique().tolist()
+    non_cancer_cells = [celltype for celltype in all_cell_types if celltype != reference_group]
+
+    # Initialize list to store all results of DGE 
+    all_results = []
+
+    for celltype in non_cancer_cells:
+        de_results = vae.differential_expression(
+            groupby = "cell_type",
+            group1 = reference_group,
+            group2 = celltype,
+            mode = "change",
+            batch_correction = True
+            )
+        print(de_results.head())
+        print(de_results.columns)
+
+        de_results_filtered = de_results.loc[de_results.index.isin(genes_of_interest)].copy()
+        de_results_filtered['comparison'] = f"{reference_group}_vs_{celltype}"
+        all_results.append(de_results_filtered)
+
+    combined_results = pd.concat(all_results)
+    combined_results.to_csv(os.path.join(csv_output_dir, "scvi_bayesian_degs.csv"))
 if __name__ == "__main__":
     main()

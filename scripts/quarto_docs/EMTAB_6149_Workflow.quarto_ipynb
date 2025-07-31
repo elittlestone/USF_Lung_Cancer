@@ -1,0 +1,133 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Lung_Cancer_Project\"\n",
+        "author: Ethan Littlestone\n",
+        "date: today\n",
+        "format: \n",
+        "    html:\n",
+        "        theme: cosmo\n",
+        "        toc: true\n",
+        "        toc-location: left\n",
+        "        number-sections: true\n",
+        "        code-fold: true\n",
+        "        code-tools: true\n",
+        "        smooth-scroll: true\n",
+        "        highlight-style: github\n",
+        "        self-contained: true\n",
+        "---\n",
+        "\n",
+        "## E-MTAB-6149 Single Cell RNA-seq Workflow\n",
+        "\n",
+        "**The dataset for this workflow can be found at the link below**\n",
+        "\n",
+        "[Single Cell Dataset](https://figshare.com/articles/dataset/E-MTAB-6149/14308775)\n",
+        "\n",
+        "**The first step for my analysis was to convert the RDS objects created in R by the researchers into python by utilizing the pyreadR python package. The files I downloaded from the dataset were the sparse gene expression matrix and the cell-type annotation file.**\n",
+        "\n",
+        "**In my python script, I did a table join of the sparse expression matrix and the celltype annotation file, using the cell barcodes as the column to join on. This allowed me to add the already determined celltypes into the Annotation Data object. For the main part of my analysis, I utilized both scanpy and scvi-tools to run the single-cell RNA-seq workflow. Scvi allows for probablistic modeling of SC RNA-seq data, utilizing deep learning and variational auto-encoders to create a latent representation of the gene expression landscape. Once I had my trained model, I could then run Scanpy's nearest-neighbor algorithm and create UMAP figures based on the latent space (as opposed to using the traditional approach of PCA to reduce the dimensionality of the dataset). I also create dotplots to visualize the expression levels for any given gene of interest. Finally, I performed differential gene expression analysis using both scanpy's wilcoxon ranked-sum approach, as well as scVI's bayesian differential expression analysis. Both tests were conducted between the cells annotated as cancer cells, and each other individual immune cell type. The summary statistics from these tests were then outputted to csv's for easy view in programs like Excel.***\n",
+        "\n",
+        "\n",
+        "## Check for batch-effect after training scVI model\n",
+        "![](../../results/EMTAB_6149/figures/umap_samples_scvi.png)\n",
+        "\n",
+        "\n",
+        "## Cell-types UMAP \n",
+        "\n",
+        "![](../../results/EMTAB_6149/figures/umap_celltypes.png)\n",
+        "\n",
+        "## UMAPs for DNA Repair Genes"
+      ],
+      "id": "78ff95da"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "results": "asis"
+      },
+      "source": [
+        "#| eval: false\n",
+        "#| echo: false\n",
+        "\n",
+        "import os \n",
+        "from IPython.display import Markdown, display\n",
+        "umap_dir = \"../../results/EMTAB_6149/dna_repair_figures/umaps\"\n",
+        "\n",
+        "files = sorted([file for file in os.listdir(umap_dir)])\n",
+        "\n",
+        "for fname in files:\n",
+        "    gene = fname.replace(\"umap_\", \"\").replace(\".png\", \"\")\n",
+        "    md = f\"### {gene}\\n\\n![]({umap_dir}/{fname}\\n)\"\n",
+        "    display(Markdown(md))"
+      ],
+      "id": "48aa4730",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Dotplot of DNA repair gene expression across cell-types \n",
+        "\n",
+        "![](../../results/EMTAB_6149/dna_repair_figures/dotplot_all_genes.png)\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n",
+        "## Summary statistics \n",
+        "\n",
+        "Scanpy's Wilcoxon Rank-Sum Test Between Cancer Cells and Each Other Immune Cell for the DNA Repair Genes:"
+      ],
+      "id": "7c84322e"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "pd.set_option(\"display.max_rows\", None)\n",
+        "df = pd.read_csv(\"../../results/EMTAB_6149/csvs/wilcoxon_degs.csv\")\n",
+        "print(df.to_markdown(index = False))"
+      ],
+      "id": "287f2983",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "scVI's Bayesian Statistical Test between Cancer Cells and Each Other Immune Cell for DNA Repair Genes:"
+      ],
+      "id": "b26adefb"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "pd.set_option(\"display.max_rows\", None)\n",
+        "df = pd.read_csv(\"../../results/EMTAB_6149/csvs/scvi_bayesian_degs.csv\")\n",
+        "print(df.to_markdown(index = False))"
+      ],
+      "id": "e4c59277",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/Users/ethanlittlestone/USF_Lung_Cancer/.pixi/envs/default/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
