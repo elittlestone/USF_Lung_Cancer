@@ -1,0 +1,94 @@
+Assuming unrestricted shared filesystem usage.
+None
+host: ethanlittlestone
+Building DAG of jobs...
+Using shell: /Users/ethanlittlestone/USF_Lung_Cancer/.pixi/envs/default/bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job                    count
+-------------------  -------
+all                        1
+download_atac_files        5
+total                      6
+
+Select jobs to execute...
+Execute 5 jobs...
+[Thu Jul 31 12:46:21 2025]
+localrule download_atac_files:
+    output: data/raw/GSE274934/ATAC/GSM8462144_AL08_ATAC_filtered_peak_bc_matrix.h5
+    jobid: 1
+    reason: Missing output files: data/raw/GSE274934/ATAC/GSM8462144_AL08_ATAC_filtered_peak_bc_matrix.h5
+    wildcards: gsm=GSM8462144, sample=AL08, filename=filtered_peak_bc_matrix.h5
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: 
+    wget -nc https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8462nnn/GSM8462144/suppl/GSM8462144_AL08_ATAC_filtered_peak_bc_matrix.h5 -O data/raw/GSE274934/ATAC/GSM8462144_AL08_ATAC_filtered_peak_bc_matrix.h5
+    
+[Thu Jul 31 12:46:21 2025]
+localrule download_atac_files:
+    output: data/raw/GSE274934/ATAC/GSM8462146_AL11_ATAC_filtered_peak_bc_matrix.h5
+    jobid: 3
+    reason: Missing output files: data/raw/GSE274934/ATAC/GSM8462146_AL11_ATAC_filtered_peak_bc_matrix.h5
+    wildcards: gsm=GSM8462146, sample=AL11, filename=filtered_peak_bc_matrix.h5
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: 
+    wget -nc https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8462nnn/GSM8462146/suppl/GSM8462146_AL11_ATAC_filtered_peak_bc_matrix.h5 -O data/raw/GSE274934/ATAC/GSM8462146_AL11_ATAC_filtered_peak_bc_matrix.h5
+    
+[Thu Jul 31 12:46:21 2025]
+localrule download_atac_files:
+    output: data/raw/GSE274934/ATAC/GSM8462143_AL05_ATAC_filtered_peak_bc_matrix.h5
+    jobid: 5
+    reason: Missing output files: data/raw/GSE274934/ATAC/GSM8462143_AL05_ATAC_filtered_peak_bc_matrix.h5
+    wildcards: gsm=GSM8462143, sample=AL05, filename=filtered_peak_bc_matrix.h5
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: 
+    wget -nc https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8462nnn/GSM8462143/suppl/GSM8462143_AL05_ATAC_filtered_peak_bc_matrix.h5 -O data/raw/GSE274934/ATAC/GSM8462143_AL05_ATAC_filtered_peak_bc_matrix.h5
+    
+[Thu Jul 31 12:46:21 2025]
+localrule download_atac_files:
+    output: data/raw/GSE274934/ATAC/GSM8462145_AL10_ATAC_filtered_peak_bc_matrix.h5
+    jobid: 2
+    reason: Missing output files: data/raw/GSE274934/ATAC/GSM8462145_AL10_ATAC_filtered_peak_bc_matrix.h5
+    wildcards: gsm=GSM8462145, sample=AL10, filename=filtered_peak_bc_matrix.h5
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: 
+    wget -nc https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8462nnn/GSM8462145/suppl/GSM8462145_AL10_ATAC_filtered_peak_bc_matrix.h5 -O data/raw/GSE274934/ATAC/GSM8462145_AL10_ATAC_filtered_peak_bc_matrix.h5
+    
+[Thu Jul 31 12:46:21 2025]
+localrule download_atac_files:
+    output: data/raw/GSE274934/ATAC/GSM8462147_AL12_ATAC_filtered_peak_bc_matrix.h5
+    jobid: 4
+    reason: Missing output files: data/raw/GSE274934/ATAC/GSM8462147_AL12_ATAC_filtered_peak_bc_matrix.h5
+    wildcards: gsm=GSM8462147, sample=AL12, filename=filtered_peak_bc_matrix.h5
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: 
+    wget -nc https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8462nnn/GSM8462147/suppl/GSM8462147_AL12_ATAC_filtered_peak_bc_matrix.h5 -O data/raw/GSE274934/ATAC/GSM8462147_AL12_ATAC_filtered_peak_bc_matrix.h5
+    
+[Thu Jul 31 12:46:25 2025]
+Finished jobid: 4 (Rule: download_atac_files)
+1 of 6 steps (17%) done
+[Thu Jul 31 12:46:25 2025]
+Finished jobid: 3 (Rule: download_atac_files)
+2 of 6 steps (33%) done
+[Thu Jul 31 12:46:25 2025]
+Finished jobid: 1 (Rule: download_atac_files)
+3 of 6 steps (50%) done
+[Thu Jul 31 12:46:35 2025]
+Finished jobid: 5 (Rule: download_atac_files)
+4 of 6 steps (67%) done
+[Thu Jul 31 12:46:38 2025]
+Finished jobid: 2 (Rule: download_atac_files)
+5 of 6 steps (83%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Thu Jul 31 12:46:38 2025]
+localrule all:
+    input: data/raw/GSE274934/ATAC/GSM8462144_AL08_ATAC_filtered_peak_bc_matrix.h5, data/raw/GSE274934/ATAC/GSM8462145_AL10_ATAC_filtered_peak_bc_matrix.h5, data/raw/GSE274934/ATAC/GSM8462146_AL11_ATAC_filtered_peak_bc_matrix.h5, data/raw/GSE274934/ATAC/GSM8462147_AL12_ATAC_filtered_peak_bc_matrix.h5, data/raw/GSE274934/ATAC/GSM8462143_AL05_ATAC_filtered_peak_bc_matrix.h5
+    jobid: 0
+    reason: Input files updated by another job: data/raw/GSE274934/ATAC/GSM8462146_AL11_ATAC_filtered_peak_bc_matrix.h5, data/raw/GSE274934/ATAC/GSM8462147_AL12_ATAC_filtered_peak_bc_matrix.h5, data/raw/GSE274934/ATAC/GSM8462144_AL08_ATAC_filtered_peak_bc_matrix.h5, data/raw/GSE274934/ATAC/GSM8462145_AL10_ATAC_filtered_peak_bc_matrix.h5, data/raw/GSE274934/ATAC/GSM8462143_AL05_ATAC_filtered_peak_bc_matrix.h5
+    resources: tmpdir=/var/folders/7x/7dyyb4rs5rj9h5yn26lxbwj40000gn/T
+Shell command: None
+[Thu Jul 31 12:46:38 2025]
+Finished jobid: 0 (Rule: all)
+6 of 6 steps (100%) done
+Complete log(s): /Users/ethanlittlestone/USF_Lung_Cancer/.snakemake/log/2025-07-31T124621.616135.snakemake.log

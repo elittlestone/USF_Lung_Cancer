@@ -280,6 +280,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/mudata-0.3.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/multipledispatch-0.6.0-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/munkres-1.1.4-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/muon-0.1.6-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/natsort-8.4.0-pyh29332c3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/nbclient-0.10.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/nbconvert-core-7.16.6-pyh29332c3_0.conda
@@ -291,7 +292,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/nomkl-1.0-h5ca1d4c_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/notebook-shim-0.2.4-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/numba-0.61.2-py311hdc76553_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/numpy-2.2.6-py311h762c074_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/numpy-2.2.0-py311h4b914e2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/numpyro-0.18.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/nvim-0.10.4-haf7b841_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/openjpeg-2.5.3-h8a3d83b_0.conda
@@ -3738,6 +3739,29 @@ packages:
   license_family: Apache
   size: 15851
   timestamp: 1749895533014
+- conda: https://conda.anaconda.org/conda-forge/noarch/muon-0.1.6-pyhd8ed1ab_0.conda
+  sha256: 1490356d89aff5d005711246c437b21cd93819c693f1bf570a4e6f02642dc0ba
+  md5: dbefd0e97a7cd6bb9d21510d46c20842
+  depends:
+  - anndata
+  - h5py
+  - matplotlib-base
+  - mudata
+  - natsort
+  - numba
+  - numpy
+  - pandas
+  - protobuf
+  - python >=3.6
+  - scanpy
+  - scikit-learn
+  - seaborn
+  - tqdm
+  - umap-learn
+  license: BSD-3-Clause
+  license_family: BSD
+  size: 204957
+  timestamp: 1714541877796
 - conda: https://conda.anaconda.org/conda-forge/noarch/natsort-8.4.0-pyh29332c3_1.conda
   sha256: 594ae12c32f163f6d312e38de41311a89e476544613df0c1d048f699721621d7
   md5: 0aa03903d33997f3886be58abc890aef
@@ -3892,9 +3916,9 @@ packages:
   license_family: BSD
   size: 5916594
   timestamp: 1749491861087
-- conda: https://conda.anaconda.org/conda-forge/osx-arm64/numpy-2.2.6-py311h762c074_0.conda
-  sha256: c6cd42960418a2bd60cfbc293f08d85076f7d8aacf7a94f516195381241d4d93
-  md5: 9446d2629b529e92769dfb34c7c194bb
+- conda: https://conda.anaconda.org/conda-forge/osx-arm64/numpy-2.2.0-py311h4b914e2_0.conda
+  sha256: 00426f06605117e30f6b51c4214dbbaae583daebc7181537da22d0375172fd60
+  md5: 87da5b6268827d1e71346a5bdd86ad77
   depends:
   - __osx >=11.0
   - libblas >=3.9.0,<4.0a0
@@ -3908,8 +3932,8 @@ packages:
   - numpy-base <0a0
   license: BSD-3-Clause
   license_family: BSD
-  size: 7018728
-  timestamp: 1747545122995
+  size: 7050174
+  timestamp: 1733688720325
 - conda: https://conda.anaconda.org/conda-forge/noarch/numpyro-0.18.0-pyhd8ed1ab_0.conda
   sha256: b3e552d33268040b0b0979a534aed3cc5dc9e10f61f090c256bc7c9b80b5ab15
   md5: 9eeb5fe55e091845d80f28161b3700e3

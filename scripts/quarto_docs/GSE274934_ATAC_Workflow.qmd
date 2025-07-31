@@ -5,6 +5,7 @@ author: "Ethan Littlestone"
 execute:
     echo: true
     eval: true
+    dir: /Users/ethanlittlestone/USF_Lung_Cancer
 format: 
     html:
         theme: cosmo
@@ -20,6 +21,7 @@ format:
 
 
 ```{bash Get sample Ids}
+#| eval: false
 mkdir ../../data/raw/GSE274934/ATAC
 
 # Get SRP for our given GSE (experiment)
@@ -27,7 +29,7 @@ pysradb gse-to-srp GSE274934
 
 # Get metadata and GSM Ids and Sample Ids
 pysradb metadata SRP526658 | grep 'ATAC-seq' | cut -f 4 | \
-awk -F'[:,]' '{gsub(/^ /,"",$2); print $1 "," $2}' > ../../data/raw/GSE274934/ATAC/GSM_IDS_and_Sample_IDS.txt
+awk -F'[:,]' '{gsub(/^ /,"",$2); print $1 "," $2}' > data/raw/GSE274934/ATAC/GSM_IDS_and_Sample_IDS.txt
 cat ../../data/raw/GSE274934/ATAC/GSM_IDS_and_Sample_IDS.txt
 
 # Output 
@@ -75,5 +77,93 @@ rule download_atac_files:
 
 
 ```{bash}
-snakemake -s ../snakemake_scripts/GSE274934_ATAC_workflow.smk -p --cores 8
+snakemake -s scripts/snakemake_scripts/GSE274934_ATAC_workflow.smk -p --cores 8
+```
+
+
+```{python}
+import glob 
+import matplotlib.pyplot as plt
+import muon as mu
+import scvi
+import scanpy as sc
+import os
+import pandas as pd
+
+def run_scvi_atac_multi_inmemory(
+    adata_paths,
+    output_dir,
+    min_counts=1000,
+    min_cells=10,
+    max_epochs=100,
+    early_stopping=True,
+    use_umap=True
+):
+    adata_list = []
+    print(f"Loading {len(adata_paths)} datasets...")
+
+    for path in adata_paths:
+        print(f"Loading {path} ...")
+        mdata = mu.read_10x_h5(path)
+        ad = mdata["atac"]
+        sample_name = os.path.basename(path).split("_")[1]  # extract sample ID
+        ad.obs["sample"] = sample_name
+        adata_list.append(ad)
+
+    print("Concatenating datasets...")
+    adata = sc.concat(adata_list, label="sample", index_unique="-")
+
+    print(f"adata shape before filtering: {adata.shape}")
+
+    print("Filtering cells and peaks...")
+    sc.pp.filter_cells(adata, min_counts=min_counts)
+    sc.pp.filter_genes(adata, min_cells=min_cells)
+
+
+    print("Setting up AnnData for scvi ATAC model...")
+    scvi.model.PEAKVI.setup_anndata(adata)
+
+    print("Creating and training SCVI model...")
+    model = scvi.model.PEAKVI(adata)
+    model.train(max_epochs=max_epochs, early_stopping=early_stopping)
+
+    print("Getting latent representation...")
+    latent = model.get_latent_representation()
+    adata.obsm["X_scVI"] = latent
+
+    os.makedirs(output_dir, exist_ok=True)
+    adata_file = os.path.join(output_dir, "adata_scvi_atac_combined.h5ad")
+    print(f"Saving AnnData to {adata_file}...")
+    adata.write_h5ad(adata_file)
+
+   
+    if use_umap:
+        print("Computing UMAP embedding...")
+        sc.pp.neighbors(adata, use_rep="X_scVI")
+        sc.tl.umap(adata)
+
+        
+        print("Plotting UMAP colored by sample...")
+        sc.pl.umap(adata, color="sample", show=True)
+    
+    print("scVI ATAC workflow completed!")
+    return adata, model
+
+
+h5_files_dir = "data/raw/GSE274934/ATAC"
+
+adata_paths = glob.glob(os.path.join(h5_files_dir, "*_filtered_peak_bc_matrix.h5"))
+
+output_dir = "results/GSE274934/ATAC/figures"
+
+adata, model = run_scvi_atac_multi_inmemory(
+    adata_paths=adata_paths,
+    output_dir=output_dir,
+    min_counts=500,
+    min_cells=5,
+    max_epochs=100,
+    early_stopping=True,
+    use_umap=True
+)
+
 ```
