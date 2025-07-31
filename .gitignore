@@ -9,4 +9,4 @@
 
 # Ignore large files
 **/*.mtx
-
+**/*.h5
