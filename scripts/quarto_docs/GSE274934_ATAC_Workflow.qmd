@@ -111,7 +111,7 @@ def run_scvi_atac_multi_inmemory(
         adata_list.append(ad)
 
     print("Concatenating datasets...")
-    adata = sc.concat(adata_list, label="sample", index_unique="-")
+    adata = sc.concat(adata_list, label="sample", index_unique="-", join = "outer")
 
     print(f"adata shape before filtering: {adata.shape}")
 
@@ -125,7 +125,7 @@ def run_scvi_atac_multi_inmemory(
 
     print("Creating and training SCVI model...")
     model = scvi.model.PEAKVI(adata)
-    model.train(max_epochs=max_epochs, early_stopping=early_stopping)
+    model.train(max_epochs=max_epochs, early_stopping=early_stopping, accelerator = "mps")
 
     print("Getting latent representation...")
     latent = model.get_latent_representation()

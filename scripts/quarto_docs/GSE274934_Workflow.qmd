@@ -1,9 +1,11 @@
 ---
-title: "ALK-positive Lung Cancer SC RNA-seq Workflow"
+title: "GSE274934 ALK-positive Lung Cancer SC RNA-seq Workflow"
 date: today
 author: "Ethan Littlestone"
+
 format: 
     html:
+        embed-resources: true
         theme: cosmo
         toc: true
         toc-location: left
@@ -23,12 +25,12 @@ The gene expression matrix files (.h5 files) can be found on the [GEO Database](
 
 We can also optionally use the *pysradb* python package in order to cleanly get the GSM Ids and sample names from this experiment. We can get the corresponding SRP for our GSE using the *gse-to-srp* command, which can then be used to grab our metadata (GSM Ids and sample names).
 
-```{bash Download Gene Expression matrices}
+ {bash Download Gene Expression matrices}
 #| eval: false
 #| echo: false
 pysradb gse-to-srp GSE274934
 pysradb metadata SRP526658 | grep 'scRNA-seq' | cut -f 4
-```
+
 
 
 I wrote a snakemake script in order to download the .h5 files from the GEO Database. 
@@ -52,13 +54,15 @@ Once we have our .h5 files, we can proceed with the analysis steps. I wrote a py
 
 ## CSV of Top DEGs per Celltype 
 ```{python}
+
+
 import pandas as pd
 pd.set_option("display.max_rows", None)
-df = pd.read_csv("../../results/GSE274934/csvs/scvi_all_vs_rest_DGEA.csv")
+df = pd.read_csv("/Users/ethanlittlestone/USF_Lung_Cancer/results/GSE274934/csvs/scvi_all_vs_rest_DGEA.csv")
 
-selected_columns = ["Unnamed: 0", "celltype", "bayes_factor", "lfc_mean", "comparison"]
+selected_columns = ["Unnamed: 0", "celltype", "lfc_mean", "comparison"]
 df = df[selected_columns]
-top_degs = df.sort_values(by=["celltype", "lfc_mean"], ascending = [True, True]).groupby("celltype").head(5)
+top_degs = df.sort_values(by=["celltype", "lfc_mean"], ascending = [True, False]).groupby("celltype").head(5)
 print(top_degs.to_markdown(index = False))
 ```
 

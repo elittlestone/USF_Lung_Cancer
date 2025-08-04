@@ -12,12 +12,6 @@ from tqdm import tqdm
 
 def main():
 
-    # Directory where figures generated will be outputted 
-    output_directory = "results/EMTAB_6149/figures"
-    os.makedirs(output_directory, exist_ok=True)
-    sc.settings.figdir = output_directory
-    sc.settings.verbosity = 'debug'
-
     # Command line arguments 
     parser = argparse.ArgumentParser(description = "Gene expression comparison script")
 
@@ -51,11 +45,16 @@ def main():
     args = parser.parse_args()
 
 
+    # Directory where figures generated will be outputted 
+    figures_output_directory = args.figures_output
+    os.makedirs(figures_output_directory, exist_ok=True)
+    sc.settings.figdir = figures_output_directory
+    sc.settings.verbosity = 'debug'
     # Define CLI arguments 
     
-    matrix_file, genes, barcodes, annotation_file, processed_h5ad_file, vae_file, gene_list, figures_output, csv_output_dir = (
+    matrix_file, genes, barcodes, annotation_file, processed_h5ad_file, vae_file, gene_list, csv_output_dir = (
             args.expression_matrix_file, args.genes, args.barcodes, args.annotation_file, args.processed_h5ad_file, 
-            args.vae_file, args.gene_list, args.figures_output, args.csv_output_dir)
+            args.vae_file, args.gene_list, args.csv_output_dir)
     
     # Read in genes to analyze from excel file 
     dna_repair_genes = pd.read_excel(gene_list)
@@ -77,11 +76,11 @@ def main():
     #adata = scvi_analysis_and_clustering(adata, processed_h5ad_file, vae_file)
     
     # Caluclate Plots for DNA Repair Genes
-    adata = gene_specific_plots(processed_h5ad_file, genes_of_interest, figures_output)
+    adata = gene_specific_plots(processed_h5ad_file, genes_of_interest, figures_output_directory)
 
     # Perform DGEA
     os.makedirs(csv_output_dir, exist_ok = True)
-    scvi_differential_expression(adata, vae_file, genes_of_interest, csv_output_dir)
+    #scvi_differential_expression(adata, vae_file, genes_of_interest, csv_output_dir)
     statistical_tests(adata, genes_of_interest, csv_output_dir)
 
 
@@ -358,5 +357,7 @@ def scvi_differential_expression(adata, vae_file, genes_of_interest, csv_output_
 
     combined_results = pd.concat(all_results)
     combined_results.to_csv(os.path.join(csv_output_dir, "scvi_bayesian_degs.csv"))
+
+
 if __name__ == "__main__":
     main()
